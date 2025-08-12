@@ -1,0 +1,663 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministerio Heme Aquí</title>
+    
+    <!-- Scripts para React, Babel, Tailwind CSS y Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+    
+    <!--
+      Se reemplaza lucide-react.js con la librería core de Lucide y se definen
+      manualmente los componentes de React para cada ícono. Esto soluciona
+      el "ReferenceError: lucideReact is not defined".
+    -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+      // Crea un objeto para almacenar los componentes de íconos de React
+      window.lucideReact = {};
+      const iconNames = ['Plus', 'Trash2', 'LayoutDashboard', 'Calculator', 'Wallet', 'BarChart2', 'ListTodo', 'TrendingUp', 'TrendingDown', 'Printer', 'X'];
+
+      // Utiliza la librería core de Lucide para crear los íconos
+      iconNames.forEach(iconName => {
+        window.lucideReact[iconName] = ({ size = 24, color = 'currentColor', ...props }) => {
+          const svgData = lucide.icons[iconName].contents;
+          return React.createElement('svg', {
+            xmlns: 'http://www.w3.org/2000/svg',
+            width: size,
+            height: size,
+            viewBox: '0 0 24 24',
+            fill: 'none',
+            stroke: color,
+            strokeWidth: 2,
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+            ...props,
+            dangerouslySetInnerHTML: { __html: svgData }
+          });
+        };
+      });
+    </script>
+    
+    <style>
+        @media print {
+            .print\:hidden, .no-print {
+                display: none !important;
+            }
+            .print\\:flex {
+                display: flex !important;
+            }
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #fff;
+            }
+            h1, h2, h3 {
+                color: #000 !important;
+            }
+            .shadow-xl, .shadow-lg, .shadow-md {
+                box-shadow: none !important;
+            }
+            .bg-white, .bg-gray-100, .bg-gray-50 {
+                background-color: #fff !important;
+            }
+            .p-6, .p-4 {
+                padding: 0 !important;
+            }
+            .m-6, .my-6 {
+                margin: 0 !important;
+            }
+            .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500 {
+                color: #000 !important;
+            }
+            .text-white {
+                color: #000 !important;
+            }
+            .bg-opacity-20 {
+                background-color: #eee !important;
+            }
+            .rounded-lg {
+                border-radius: 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 1rem;
+                margin-bottom: 2rem;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+            }
+            .report-section {
+                margin-bottom: 2rem;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        document.addEventListener('DOMContentLoaded', function() {
+            const { useState, useEffect } = React;
+            const { Plus, Trash2, LayoutDashboard, Calculator, Wallet, BarChart2, ListTodo, TrendingUp, TrendingDown, Printer, X } = window.lucideReact;
+
+            const prefilledProducts = [
+                'Te Paris', 'Galletas', 'Cereales', 'Arroz 3/4', 'Fideo Famosa', 'Azúcar blanca', 'Arina Pampa blanca',
+                'Lavandina', 'Jaboncillo', 'Ace brillo', 'Mantequilla', 'Mermelada', 'Sal', 'Sardina', 'Picadillo',
+                'Shampoo', 'Harry el limonero', 'Salsa soja', 'Vinagre', 'Doña gusta'
+            ];
+
+            const App = () => {
+                const [products, setProducts] = useState([]);
+                const [materials, setMaterials] = useState([]);
+                const [debts, setDebts] = useState([]);
+                const [cash, setCash] = useState('0');
+                const [initialCapital, setInitialCapital] = useState('0');
+                const [showReportModal, setShowReportModal] = useState(false);
+                
+                const [newProduct, setNewProduct] = useState({ name: '', quantity: '0', cost: '0' });
+                const [newMaterial, setNewMaterial] = useState({ name: '', quantity: '0', cost: '0' });
+                const [newDebt, setNewDebt] = useState({ debtor: '', concept: '', amount: '0', dueDate: '' });
+            
+                const [totals, setTotals] = useState({
+                    totalProductsValue: 0,
+                    totalMaterialsValue: 0,
+                    totalDebts: 0,
+                    finalMonetaryTotal: 0,
+                    profitOrLoss: 0,
+                });
+
+                useEffect(() => {
+                    const initialCapitalAsNumber = parseFloat(initialCapital) || 0;
+                    const cashAsNumber = parseFloat(cash) || 0;
+                    
+                    const totalProductsValue = products.reduce((sum, item) => sum + (item.quantity * item.cost), 0);
+                    const totalMaterialsValue = materials.reduce((sum, item) => sum + (item.quantity * item.cost), 0);
+                    const totalDebts = debts.reduce((sum, item) => sum + item.amount, 0);
+                    const finalMonetaryTotal = (totalProductsValue + totalMaterialsValue + cashAsNumber) + totalDebts;
+                    const profitOrLoss = finalMonetaryTotal - initialCapitalAsNumber;
+            
+                    setTotals({
+                        totalProductsValue,
+                        totalMaterialsValue,
+                        totalDebts,
+                        finalMonetaryTotal,
+                        profitOrLoss,
+                    });
+                }, [products, materials, debts, cash, initialCapital]);
+
+                const handleAddProduct = () => {
+                    const quantityAsNumber = parseFloat(newProduct.quantity) || 0;
+                    const costAsNumber = parseFloat(newProduct.cost) || 0;
+                    if (newProduct.name && quantityAsNumber > 0 && costAsNumber > 0) {
+                        setProducts([...products, { ...newProduct, quantity: quantityAsNumber, cost: costAsNumber, id: Date.now() }]);
+                        setNewProduct({ name: '', quantity: '0', cost: '0' });
+                    }
+                };
+            
+                const handleAddMaterial = () => {
+                    const quantityAsNumber = parseFloat(newMaterial.quantity) || 0;
+                    const costAsNumber = parseFloat(newMaterial.cost) || 0;
+                    if (newMaterial.name && quantityAsNumber > 0 && costAsNumber > 0) {
+                        setMaterials([...materials, { ...newMaterial, quantity: quantityAsNumber, cost: costAsNumber, id: Date.now() }]);
+                        setNewMaterial({ name: '', quantity: '0', cost: '0' });
+                    }
+                };
+            
+                const handleAddDebt = () => {
+                    const amountAsNumber = parseFloat(newDebt.amount) || 0;
+                    if (newDebt.debtor && newDebt.concept && amountAsNumber > 0) {
+                        setDebts([...debts, { ...newDebt, amount: amountAsNumber, id: Date.now() }]);
+                        setNewDebt({ debtor: '', concept: '', amount: '0', dueDate: '' });
+                    }
+                };
+            
+                const handleDeleteItem = (list, setList, id) => {
+                    setList(list.filter(item => item.id !== id));
+                };
+            
+                const renderInventoryForm = (item, setItem, addItem, title) => {
+                    const isProductForm = title.includes('Productos');
+            
+                    return (
+                        <div className="p-4 bg-white rounded-lg shadow-md print:hidden">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-700">{title}</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                                {isProductForm ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre (o elige de la lista)"
+                                            value={item.name}
+                                            onChange={(e) => setItem({ ...item, name: e.target.value })}
+                                            list="product-list"
+                                            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                        />
+                                        <datalist id="product-list">
+                                            {prefilledProducts.map((p, index) => (
+                                                <option key={index} value={p} />
+                                            ))}
+                                        </datalist>
+                                    </>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre"
+                                        value={item.name}
+                                        onChange={(e) => setItem({ ...item, name: e.target.value })}
+                                        className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                    />
+                                )}
+            
+                                <input
+                                    type="text"
+                                    placeholder="Cantidad"
+                                    value={item.quantity}
+                                    onChange={(e) => setItem({ ...item, quantity: e.target.value })}
+                                    onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
+                                    onBlur={(e) => { if (e.target.value === '') e.target.value = '0'; }}
+                                    className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                />
+            
+                                <input
+                                    type="text"
+                                    placeholder="Costo por unidad (Bs)"
+                                    value={item.cost}
+                                    onChange={(e) => setItem({ ...item, cost: e.target.value })}
+                                    onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
+                                    onBlur={(e) => { if (e.target.value === '') e.target.value = '0'; }}
+                                    className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                />
+                            </div>
+                            <button
+                                onClick={addItem}
+                                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2"
+                            >
+                                <Plus size={20} />
+                                <span>Agregar {title.includes('Productos') ? 'Producto' : 'Material'}</span>
+                            </button>
+                        </div>
+                    );
+                };
+            
+                const renderInventoryTable = (list, setList, showActions = true) => (
+                    <div className="bg-white rounded-lg shadow-md mt-4 overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Costo/Unidad</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Total</th>
+                                    {showActions && (
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
+                                    )}
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {list.map(item => (
+                                    <tr key={item.id} className="hover:bg-gray-50 transition duration-200">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {item.cost.toFixed(2)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {(item.quantity * item.cost).toFixed(2)}</td>
+                                        {showActions && (
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button
+                                                    onClick={() => handleDeleteItem(list, setList, item.id)}
+                                                    className="text-red-600 hover:text-red-900 transition duration-200"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            
+                const renderDebtForm = () => (
+                    <div className="p-4 bg-white rounded-lg shadow-md print:hidden">
+                        <h3 className="text-xl font-semibold mb-4 text-gray-700">Deudas Pendientes por Cobrar</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <input
+                                type="text"
+                                placeholder="Deudor"
+                                value={newDebt.debtor}
+                                onChange={(e) => setNewDebt({ ...newDebt, debtor: e.target.value })}
+                                className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Concepto"
+                                value={newDebt.concept}
+                                onChange={(e) => setNewDebt({ ...newDebt, concept: e.target.value })}
+                                className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Monto (Bs)"
+                                value={newDebt.amount}
+                                onChange={(e) => setNewDebt({ ...newDebt, amount: e.target.value })}
+                                onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
+                                onBlur={(e) => { if (e.target.value === '') e.target.value = '0'; }}
+                                className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                            />
+                            <input
+                                type="date"
+                                value={newDebt.dueDate}
+                                onChange={(e) => setNewDebt({ ...newDebt, dueDate: e.target.value })}
+                                className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                            />
+                        </div>
+                        <button
+                            onClick={handleAddDebt}
+                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2"
+                        >
+                            <Plus size={20} />
+                            <span>Agregar Deuda</span>
+                        </button>
+                    </div>
+                );
+            
+                const renderDebtTable = (list, setList, showActions = true) => (
+                    <div className="bg-white rounded-lg shadow-md mt-4 overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deudor</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concepto</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento</th>
+                                    {showActions && (
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
+                                    )}
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {list.map(item => (
+                                    <tr key={item.id} className="hover:bg-gray-50 transition duration-200">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.debtor}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.concept}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {item.amount.toFixed(2)}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.dueDate}</td>
+                                        {showActions && (
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button
+                                                    onClick={() => handleDeleteItem(list, setList, item.id)}
+                                                    className="text-red-600 hover:text-red-900 transition duration-200"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+                
+                const SummaryCard = ({ title, value, icon, color }) => (
+                    <div className={`p-6 rounded-lg shadow-lg flex items-center space-x-4 transition duration-300 transform hover:scale-105 ${color}`}>
+                        <div className="p-3 bg-white bg-opacity-20 rounded-full">
+                            {icon}
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-medium text-white opacity-80">{title}</h4>
+                            <p className="text-2xl font-bold text-white">Bs {value.toFixed(2)}</p>
+                        </div>
+                    </div>
+                );
+            
+                const profitColor = totals.profitOrLoss >= 0 ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-red-500 to-red-600';
+                const profitIcon = totals.profitOrLoss >= 0 ? <TrendingUp size={24} className="text-white" /> : <TrendingDown size={24} className="text-white" />;
+                
+                const handlePrint = () => {
+                    window.print();
+                };
+            
+                return (
+                    <div className="min-h-screen bg-gray-100 font-sans text-gray-800 p-4 sm:p-8">
+                        <div className="no-print">
+                            <h1 className="text-4xl sm:text-5xl font-bold text-center mb-10 text-gray-800">Ministerio Heme Aquí</h1>
+            
+                            <div className="mb-10 p-6 rounded-lg bg-white shadow-xl">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-3xl font-bold text-gray-700 flex items-center space-x-3">
+                                        <LayoutDashboard size={28} />
+                                        <span>Resumen Financiero</span>
+                                    </h2>
+                                    <button
+                                        onClick={() => setShowReportModal(true)}
+                                        className="bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition duration-200 flex items-center justify-center space-x-2"
+                                    >
+                                        <Printer size={20} />
+                                        <span>Imprimir Reporte</span>
+                                    </button>
+                                </div>
+            
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-xl font-semibold text-gray-600">Efectivo:</span>
+                                        <div className="flex items-center bg-gray-200 rounded-lg p-2">
+                                            <span className="text-lg font-bold mr-1">Bs</span>
+                                            <input
+                                                type="text"
+                                                value={cash}
+                                                onChange={(e) => setCash(e.target.value)}
+                                                onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
+                                                onBlur={(e) => { if (e.target.value === '') e.target.value = '0'; }}
+                                                className="w-24 bg-transparent text-lg font-bold focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-sm font-medium text-gray-600 opacity-80">Capital Inicial:</span>
+                                        <div className="flex items-center bg-gray-200 rounded-lg p-2">
+                                            <span className="text-lg font-bold mr-1 text-gray-800">Bs</span>
+                                            <input
+                                                type="text"
+                                                value={initialCapital}
+                                                onChange={(e) => setInitialCapital(e.target.value)}
+                                                onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
+                                                onBlur={(e) => { if (e.target.value === '') e.target.value = '0'; }}
+                                                className="w-24 bg-transparent text-lg font-bold focus:outline-none text-gray-800"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <SummaryCard
+                                        title="Valor Total de Productos"
+                                        value={totals.totalProductsValue}
+                                        icon={<BarChart2 size={24} className="text-white" />}
+                                        color="bg-gradient-to-r from-green-500 to-green-600"
+                                    />
+                                    <SummaryCard
+                                        title="Valor Total de Materiales"
+                                        value={totals.totalMaterialsValue}
+                                        icon={<BarChart2 size={24} className="text-white" />}
+                                        color="bg-gradient-to-r from-yellow-500 to-yellow-600"
+                                    />
+                                    <SummaryCard
+                                        title="Total por Cobrar"
+                                        value={totals.totalDebts}
+                                        icon={<ListTodo size={24} className="text-white" />}
+                                        color="bg-gradient-to-r from-blue-500 to-blue-600"
+                                    />
+                                    <SummaryCard
+                                        title="Monto Monetario Total"
+                                        value={totals.finalMonetaryTotal}
+                                        icon={<Calculator size={24} className="text-white" />}
+                                        color="bg-gradient-to-r from-blue-500 to-blue-600"
+                                    />
+                                    <div className="md:col-span-2 lg:col-span-4">
+                                        <div className={`p-6 rounded-lg shadow-lg flex items-center justify-center space-x-4 transition duration-300 transform hover:scale-105 ${profitColor}`}>
+                                            <div className="flex items-center space-x-4">
+                                                {profitIcon}
+                                                <div>
+                                                    <h4 className="text-sm font-medium text-white opacity-80">Ganancia/Pérdida</h4>
+                                                    <p className="text-2xl font-bold text-white">Bs {totals.profitOrLoss.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div className="bg-white rounded-lg p-6 shadow-xl">
+                                    <h2 className="text-2xl font-bold text-gray-700 mb-4">Inventario de Productos</h2>
+                                    {renderInventoryForm(newProduct, setNewProduct, handleAddProduct, 'Inventario de Productos')}
+                                    {products.length > 0 && renderInventoryTable(products, setProducts)}
+                                </div>
+            
+                                <div className="bg-white rounded-lg p-6 shadow-xl">
+                                    <h2 className="text-2xl font-bold text-gray-700 mb-4">Inventario de Materiales</h2>
+                                    {renderInventoryForm(newMaterial, setNewMaterial, handleAddMaterial, 'Inventario de Materiales')}
+                                    {materials.length > 0 && renderInventoryTable(materials, setMaterials)}
+                                </div>
+            
+                                <div className="lg:col-span-2 bg-white rounded-lg p-6 shadow-xl">
+                                    <h2 className="text-2xl font-bold text-gray-700 mb-4">Deudas Pendientes por Cobrar</h2>
+                                    {renderDebtForm()}
+                                    {debts.length > 0 && renderDebtTable(debts, setDebts)}
+                                </div>
+                            </div>
+                        </div>
+            
+                        {showReportModal && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 no-print">
+                                <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+                                    <div className="flex justify-between items-center mb-6 border-b pb-4">
+                                        <div>
+                                            <h1 className="text-3xl font-bold text-gray-800">Reporte de Gestión Financiera</h1>
+                                            <h2 className="text-sm text-gray-500 mt-1">Pulpería Comunitaria Benigno</h2>
+                                            <p className="text-xs text-gray-500 mt-1">Generado el: {new Date().toLocaleString()}</p>
+                                        </div>
+                                        <button onClick={() => setShowReportModal(false)} className="text-gray-500 hover:text-gray-800 transition duration-200">
+                                            <X size={24} />
+                                        </button>
+                                    </div>
+            
+                                    <div className="report-section mb-8">
+                                        <h2 className="text-2xl font-bold text-gray-700 mb-2">Resumen Financiero General</h2>
+                                        <p className="text-sm text-gray-600 mb-4">
+                                            Un resumen conciso del estado financiero actual de tu negocio, comparado con el capital inicial.
+                                        </p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="p-4 bg-gray-100 rounded-lg">
+                                                <h3 className="font-semibold text-gray-700">Capital Inicial</h3>
+                                                <p className="text-lg font-bold text-gray-800">Bs {parseFloat(initialCapital).toFixed(2)}</p>
+                                            </div>
+                                            <div className="p-4 bg-gray-100 rounded-lg">
+                                                <h3 className="font-semibold text-gray-700">Monto Monetario Total</h3>
+                                                <p className="text-lg font-bold text-gray-800">Bs {totals.finalMonetaryTotal.toFixed(2)}</p>
+                                            </div>
+                                            <div className={`p-4 rounded-lg md:col-span-2 ${totals.profitOrLoss >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                <h3 className="font-semibold">Ganancia / Pérdida</h3>
+                                                <p className="text-lg font-bold flex items-center space-x-2">
+                                                    {totals.profitOrLoss >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
+                                                    <span>Bs {totals.profitOrLoss.toFixed(2)}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+                                    <div className="report-section mb-8">
+                                        <h2 className="text-2xl font-bold text-gray-700 mb-2">Inventario de Productos</h2>
+                                        <p className="text-sm text-gray-600 mb-4">
+                                            Detalle de todos los productos en stock, con su cantidad, costo y valor total.
+                                        </p>
+                                        {products.length > 0 ? (
+                                            <div className="bg-white rounded-lg shadow-md mt-4 overflow-x-auto">
+                                                <table className="min-w-full divide-y divide-gray-200">
+                                                    <thead className="bg-gray-50">
+                                                        <tr>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Costo/Unidad</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white divide-y divide-gray-200">
+                                                        {products.map(item => (
+                                                            <tr key={item.id}>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {item.cost.toFixed(2)}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {(item.quantity * item.cost).toFixed(2)}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500">No hay productos registrados.</p>
+                                        )}
+                                    </div>
+            
+                                    <div className="report-section mb-8">
+                                        <h2 className="text-2xl font-bold text-gray-700 mb-2">Inventario de Materiales</h2>
+                                        <p className="text-sm text-gray-600 mb-4">
+                                            Detalle de los materiales o insumos en stock, con su cantidad, costo y valor total.
+                                        </p>
+                                        {materials.length > 0 ? (
+                                            <div className="bg-white rounded-lg shadow-md mt-4 overflow-x-auto">
+                                                <table className="min-w-full divide-y divide-gray-200">
+                                                    <thead className="bg-gray-50">
+                                                        <tr>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Costo/Unidad</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white divide-y divide-gray-200">
+                                                        {materials.map(item => (
+                                                            <tr key={item.id}>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.quantity}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {item.cost.toFixed(2)}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {(item.quantity * item.cost).toFixed(2)}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500">No hay materiales registrados.</p>
+                                        )}
+                                    </div>
+            
+                                    <div className="report-section">
+                                        <h2 className="text-2xl font-bold text-gray-700 mb-2">Deudas Pendientes por Cobrar</h2>
+                                        <p className="text-sm text-gray-600 mb-4">
+                                            Un registro de las personas que te deben dinero, incluyendo el concepto y la fecha de vencimiento.
+                                        </p>
+                                        {debts.length > 0 ? (
+                                            <div className="bg-white rounded-lg shadow-md mt-4 overflow-x-auto">
+                                                <table className="min-w-full divide-y divide-gray-200">
+                                                    <thead className="bg-gray-50">
+                                                        <tr>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deudor</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concepto</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white divide-y divide-gray-200">
+                                                        {debts.map(item => (
+                                                            <tr key={item.id}>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.debtor}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.concept}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bs {item.amount.toFixed(2)}</td>
+                                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.dueDate}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-500">No hay deudas por cobrar registradas.</p>
+                                        )}
+                                    </div>
+            
+                                    <div className="mt-6 flex justify-end space-x-4">
+                                        <button
+                                            onClick={() => setShowReportModal(false)}
+                                            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-200"
+                                        >
+                                            Cerrar
+                                        </button>
+                                        <button
+                                            onClick={handlePrint}
+                                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 flex items-center space-x-2"
+                                        >
+                                            <Printer size={18} />
+                                            <span>Imprimir</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+            
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        });
+    </script>
+</body>
+</html>
