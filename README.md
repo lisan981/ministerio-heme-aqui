@@ -1,114 +1,319 @@
-# TaskFlow - Gestión de Tareas Moderna
+# Pulpería Comunitaria - App Android
 
-Una aplicación web moderna y elegante para gestionar tareas con una interfaz intuitiva y funcionalidades avanzadas.
+Una aplicación móvil para Android desarrollada en React Native para la gestión completa de una pulpería comunitaria. Esta app convierte la funcionalidad web original a una experiencia móvil nativa con almacenamiento local.
 
-## 🌟 Características
+## 🎯 Características Principales
 
-### ✨ Funcionalidades Principales
-- **Gestión Completa de Tareas**: Crear, editar, eliminar y marcar tareas como completadas
-- **Categorización**: Organiza tareas por categorías (Personal, Trabajo, Salud, Aprendizaje)
-- **Sistema de Prioridades**: Establece prioridades (Alta, Media, Baja) con códigos de color
-- **Fechas de Vencimiento**: Asigna fechas límite y visualiza tareas vencidas
-- **Búsqueda y Filtros**: Encuentra tareas rápidamente con búsqueda en tiempo real y filtros múltiples
-- **Persistencia Local**: Tus tareas se guardan automáticamente en el navegador
-- **Modo Oscuro**: Alterna entre tema claro y oscuro
-- **Diseño Responsivo**: Optimizado para dispositivos móviles y escritorio
+### 📱 **App Móvil Nativa**
+- **Interfaz Optimizada**: Diseño adaptado específicamente para dispositivos Android
+- **Navegación por Pestañas**: Acceso rápido a las funciones principales
+- **Almacenamiento Local**: Todos los datos se guardan en el dispositivo usando AsyncStorage
+- **Funciona Sin Internet**: Una vez instalada, funciona completamente offline
 
-### 🎨 Diseño Moderno
-- **Interfaz Glassmorphism**: Efectos de vidrio y transparencias modernas
-- **Animaciones Suaves**: Transiciones fluidas y efectos de hover
-- **Gradientes Atractivos**: Paleta de colores profesional
-- **Iconografía Consistente**: Iconos de Lucide para una experiencia visual coherente
+### 💼 **Gestión Completa de Negocio**
+- **Dashboard Inteligente**: Resumen financiero y métricas en tiempo real
+- **Inventario de Productos**: Control de stock, compras y precios
+- **Gestión de Materiales**: Inventario de materiales y suministros
+- **Sistema de Ventas**: Registro de ventas en efectivo y crédito
+- **Control de Deudas**: Seguimiento de cuentas por cobrar
+- **Gestión de Capital**: Registro de inyecciones de capital
+- **Control de Gastos**: Seguimiento de egresos operativos
+- **Suscripciones**: Manejo de pagos de suscriptores
+- **Reportes**: Generación de reportes financieros detallados
 
-### 📊 Dashboard Inteligente
-- **Estadísticas en Tiempo Real**: Visualiza el total, completadas, pendientes y vencidas
-- **Indicadores Visuales**: Códigos de color para prioridades y estados
-- **Notificaciones de Vencimiento**: Destacado visual para tareas vencidas
+### 🔒 **Seguridad y Licencias**
+- **Sistema de Activación**: Código de activación para uso autorizado
+- **Licencia de 90 días**: Sistema de reactivación automática
+- **Datos Locales**: Información almacenada únicamente en el dispositivo
 
-## 🚀 Cómo Usar
+## 🚀 Instalación y Configuración
 
-### Abrir la Aplicación
-1. Abre el archivo `app.html` en tu navegador web
-2. ¡La aplicación se cargará inmediatamente!
+### Prerrequisitos
 
-### Crear una Nueva Tarea
-1. Haz clic en el botón **"Nueva Tarea"** en la esquina superior derecha
-2. Completa el formulario:
-   - **Título**: ¿Qué necesitas hacer?
-   - **Descripción**: Detalles adicionales (opcional)
-   - **Prioridad**: Alta (roja), Media (amarilla), Baja (verde)
-   - **Categoría**: Personal, Trabajo, Salud, Aprendizaje
-   - **Fecha Límite**: Opcional
-3. Haz clic en **"Crear"**
+```bash
+# Node.js (versión 16 o superior)
+node --version
 
-### Gestionar Tareas
-- **Completar**: Haz clic en el círculo verde junto a la tarea
-- **Editar**: Haz clic en el ícono de lápiz
-- **Eliminar**: Haz clic en el ícono de papelera
-- **Buscar**: Usa la barra de búsqueda para encontrar tareas específicas
-- **Filtrar**: Usa los botones de filtro para ver tareas por estado o prioridad
+# React Native CLI
+npm install -g @react-native-community/cli
 
-### Cambiar Tema
-- Haz clic en el ícono de sol/luna en la esquina superior derecha para alternar entre modo claro y oscuro
+# Android Studio con SDK de Android
+# Java Development Kit (JDK) 11 o superior
+```
 
-## 🛠️ Tecnologías Utilizadas
+### Configuración del Proyecto
 
-- **React 18**: Framework de JavaScript para interfaces de usuario
-- **Tailwind CSS**: Framework CSS utilitario para diseño rápido
-- **Lucide Icons**: Biblioteca de iconos moderna y consistente
-- **Local Storage**: Persistencia de datos en el navegador
-- **Babel**: Transpilador para JSX en el navegador
+1. **Clonar el repositorio**:
+```bash
+git clone <repository-url>
+cd PulperiaComunitaria
+```
 
-## 📱 Compatibilidad
+2. **Instalar dependencias**:
+```bash
+npm install
+```
 
-La aplicación es compatible con:
-- ✅ Chrome, Firefox, Safari, Edge (versiones modernas)
-- ✅ Dispositivos móviles (iOS, Android)
-- ✅ Tablets y computadoras de escritorio
-- ✅ Resoluciones desde 320px hasta 4K
+3. **Configurar Android**:
+```bash
+# Asegúrate de que Android Studio esté instalado
+# Configura las variables de entorno ANDROID_HOME y PATH
+# Conecta un dispositivo Android o inicia un emulador
+```
 
-## 🎯 Casos de Uso
+4. **Ejecutar la aplicación**:
+```bash
+# Iniciar Metro bundler
+npm start
 
-### Para Profesionales
-- Gestión de proyectos personales
-- Seguimiento de tareas diarias
-- Planificación de reuniones y deadlines
-- Organización de objetivos a corto y largo plazo
+# En otra terminal, ejecutar en Android
+npm run android
+```
 
-### Para Estudiantes
-- Planificación de estudios
-- Seguimiento de tareas académicas
-- Organización de proyectos de investigación
-- Gestión de exámenes y entregas
+### Construcción para Producción
 
-### Para Uso Personal
-- Lista de tareas domésticas
-- Planificación de actividades de salud
-- Organización de hobbies y proyectos personales
-- Seguimiento de hábitos
+```bash
+# Generar APK de release
+npm run build-android
 
-## 🔒 Privacidad y Datos
+# El APK se generará en: android/app/build/outputs/apk/release/
+```
 
-- **100% Local**: Todos los datos se almacenan únicamente en tu navegador
-- **Sin Servidor**: No se envía información a servidores externos
-- **Control Total**: Puedes exportar o limpiar tus datos cuando quieras
+## 📱 Uso de la Aplicación
 
-## 🌐 Funciona Sin Internet
+### Primera Configuración
 
-Una vez cargada, la aplicación funciona completamente offline. Solo necesitas conexión a internet para la carga inicial de las librerías externas.
+1. **Activación Inicial**:
+   - Al abrir la app por primera vez, se solicitará el código de activación
+   - Introduce tu nombre y correo electrónico
+   - Ingresa el código de activación: `120217`
 
-## 🎨 Personalización
+2. **Navegación Principal**:
+   - **Resumen**: Dashboard con métricas financieras
+   - **Inventario**: Gestión de productos y stock
+   - **Ventas**: Registro de transacciones
+   - **Reportes**: Informes financieros detallados
+   - **Más**: Acceso a funciones adicionales
 
-El código está organizado y comentado para facilitar personalizaciones:
-- Modifica colores en la configuración de Tailwind
-- Agrega nuevas categorías en el array de opciones
-- Personaliza los iconos cambiando los nombres en `iconNames`
-- Ajusta animaciones modificando las clases CSS
+### Funciones Clave
 
-## 🤝 Contribuir
+#### 📊 **Dashboard**
+- Visualización de efectivo disponible
+- Total de activos y valores del inventario
+- Resumen de deudas por cobrar
+- Métricas de ganancias y gastos
 
-¿Tienes ideas para mejorar TaskFlow? ¡Las sugerencias son bienvenidas!
+#### 📦 **Inventario**
+- Agregar productos con precios de costo y venta
+- Control de stock en tiempo real
+- Códigos de compra para organización
+- Actualización automática del efectivo
+
+#### 💰 **Ventas**
+- Ventas en efectivo o crédito
+- Selección múltiple de productos
+- Cálculo automático de totales
+- Registro automático de deudores
+
+#### 📈 **Reportes**
+- Reportes financieros completos
+- Historial de ganancias por mes
+- Detalle de inventarios y deudas
+- Exportación e impresión de reportes
+
+## 🛠️ Arquitectura Técnica
+
+### Estructura del Proyecto
+
+```
+PulperiaComunitaria/
+├── src/
+│   ├── screens/           # Pantallas de la aplicación
+│   │   ├── LoginScreen.js
+│   │   ├── DashboardScreen.js
+│   │   ├── InventarioScreen.js
+│   │   └── ...
+│   └── services/
+│       └── StorageService.js  # Servicio de almacenamiento local
+├── App.js                 # Componente principal y navegación
+├── package.json          # Dependencias y scripts
+└── README.md            # Documentación
+```
+
+### Tecnologías Utilizadas
+
+- **React Native 0.72.6**: Framework principal
+- **React Navigation 6**: Navegación entre pantallas
+- **React Native Paper 5**: Componentes UI Material Design
+- **AsyncStorage**: Almacenamiento local persistente
+- **React Native Vector Icons**: Iconografía
+- **React Native Date Picker**: Selección de fechas
+
+### Almacenamiento de Datos
+
+Los datos se almacenan localmente usando AsyncStorage con la siguiente estructura:
+
+```javascript
+// Tipos de datos almacenados
+- profile_data: Información del usuario y configuración
+- productos: Inventario de productos
+- materiales: Inventario de materiales
+- deudas: Cuentas por cobrar
+- ventas: Historial de ventas
+- gastos: Registro de gastos
+- capital_injections: Inyecciones de capital
+- suscripciones: Pagos de suscriptores
+- quarterly_reports: Reportes automáticos
+```
+
+## 🔧 Personalización
+
+### Cambiar Colores del Tema
+
+Edita el archivo `App.js`:
+
+```javascript
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#6c9a75',      // Color principal
+    accent: '#6c9a75',       // Color de acento
+    background: '#f7f9f3',   // Fondo de la app
+    surface: '#ffffff',      // Fondo de tarjetas
+    text: '#2e3d31',        // Color de texto
+  },
+};
+```
+
+### Agregar Nuevos Productos Base
+
+Edita `src/services/StorageService.js`:
+
+```javascript
+async getProductosBase() {
+  const productosBase = await this.getItem(this.keys.PRODUCTOS_BASE);
+  return productosBase || [
+    'Producto 1',
+    'Producto 2',
+    // Agregar más productos aquí
+  ];
+}
+```
+
+### Personalizar Código de Activación
+
+Edita `src/screens/LoginScreen.js`:
+
+```javascript
+const activationCode = '120217'; // Cambiar por tu código
+```
+
+## 📊 Conversión de Web a Móvil
+
+Esta aplicación es una conversión completa de la versión web original con las siguientes mejoras:
+
+### ✅ **Cambios Realizados**
+
+1. **Firebase → AsyncStorage**: 
+   - Eliminación de dependencia de Firebase
+   - Almacenamiento 100% local en el dispositivo
+
+2. **HTML/CSS → React Native**:
+   - Componentes web convertidos a componentes nativos
+   - Estilos CSS convertidos a StyleSheet de React Native
+
+3. **Navegación Web → React Navigation**:
+   - Navegación por pestañas optimizada para móvil
+   - Stack navigation para pantallas secundarias
+
+4. **UI/UX Móvil**:
+   - Interfaz adaptada para pantallas táctiles
+   - Componentes Material Design con React Native Paper
+   - Navegación optimizada para una mano
+
+5. **Funcionalidad Offline**:
+   - Todos los datos se almacenan localmente
+   - No requiere conexión a internet para funcionar
+
+### 🆕 **Mejoras Añadidas**
+
+- **Pull-to-refresh** en todas las pantallas
+- **FAB (Floating Action Button)** para acciones rápidas
+- **Modales** para formularios complejos
+- **Date Picker nativo** para selección de fechas
+- **Alertas nativas** para confirmaciones
+- **Navegación por pestañas** más intuitiva
+
+## 🔄 Migración de Datos
+
+Si tienes datos de la versión web y quieres migrarlos a la app móvil:
+
+1. Exporta los datos desde Firebase (versión web)
+2. Usa el método `importData()` del `StorageService`
+3. Los datos se convertirán automáticamente al formato local
+
+```javascript
+// Ejemplo de migración
+import StorageService from './src/services/StorageService';
+
+const migrateFromWeb = async (webData) => {
+  await StorageService.importData(webData);
+  console.log('Datos migrados exitosamente');
+};
+```
+
+## 🐛 Solución de Problemas
+
+### Problemas Comunes
+
+1. **Error de Metro bundler**:
+```bash
+npx react-native start --reset-cache
+```
+
+2. **Error de Android build**:
+```bash
+cd android
+./gradlew clean
+cd ..
+npm run android
+```
+
+3. **Problemas de permisos**:
+```bash
+chmod +x android/gradlew
+```
+
+### Logs de Debug
+
+```bash
+# Ver logs de Android
+npx react-native log-android
+
+# Debug en Chrome
+# Shake del dispositivo > "Debug" > Abre Chrome DevTools
+```
+
+## 📞 Soporte
+
+Para soporte técnico o consultas sobre la aplicación:
+
+- **Desarrollado por**: Ministerio Heme Aquí
+- **Versión**: 1.0.0
+- **Licencia**: MIT
+
+## 🚀 Próximas Funcionalidades
+
+- [ ] Backup y restauración de datos
+- [ ] Exportación de reportes a PDF
+- [ ] Notificaciones push para recordatorios
+- [ ] Modo oscuro
+- [ ] Múltiples monedas
+- [ ] Sincronización en la nube (opcional)
 
 ---
 
-**¡Disfruta organizando tus tareas con TaskFlow!** 🎉
+**¡Gracias por usar la Pulpería Comunitaria App!** 🎉
+
+Esta aplicación ha sido desarrollada específicamente para facilitar la gestión de pulperías comunitarias, manteniendo todos los datos seguros en el dispositivo local.
