@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Previa - Pulpería Comunitaria APK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6c9a75 0%, #5b8764 100%);
+            line-height: 1.6;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .download-section {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 40px 20px;
+            margin-top: -20px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .download-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            border: 3px solid #6c9a75;
+        }
+        
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background: #6c9a75;
+            border-radius: 25px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(108, 154, 117, 0.3);
+        }
+        
+        .download-btn {
+            background: #6c9a75;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 154, 117, 0.3);
+        }
+        
+        .download-btn:hover {
+            background: #5b8764;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 154, 117, 0.4);
+        }
+        
+        .download-btn.secondary {
+            background: #2196F3;
+        }
+        
+        .download-btn.secondary:hover {
+            background: #1976D2;
+        }
+        
+        .app-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .info-item h3 {
+            color: #6c9a75;
+            margin-bottom: 10px;
+        }
+        
+        .screenshots {
+            margin: 40px 0;
+        }
+        
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .screenshot {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .phone-mockup {
+            width: 200px;
+            height: 350px;
+            background: linear-gradient(135deg, #6c9a75 0%, #5b8764 100%);
+            border-radius: 25px;
+            margin: 0 auto 15px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .screen {
+            background: white;
+            margin: 15px;
+            border-radius: 15px;
+            height: calc(100% - 30px);
+            display: flex;
+            flex-direction: column;
+            font-size: 10px;
+            padding: 10px;
+        }
+        
+        .status-bar {
+            height: 15px;
+            background: #6c9a75;
+            border-radius: 5px 5px 0 0;
+            margin: -10px -10px 5px -10px;
+        }
+        
+        .app-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .tab-bar {
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            margin: 5px -10px -10px -10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .tab {
+            width: 25px;
+            height: 25px;
+            background: #6c9a75;
+            border-radius: 5px;
+            opacity: 0.7;
+        }
+        
+        .tab.active {
+            opacity: 1;
+            background: #4CAF50;
+        }
+        
+        .features {
+            background: white;
+            padding: 40px 20px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #6c9a75;
+        }
+        
+        .feature h3 {
+            color: #2e3d31;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .activation-code {
+            background: #e8f5e8;
+            border: 3px solid #6c9a75;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px auto;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .code {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2e3d31;
+            font-family: monospace;
+            letter-spacing: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .phone-mockup { width: 150px; height: 260px; }
+            .download-btn { padding: 15px 25px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>🏪 Pulpería Comunitaria</h1>
+        <p>App Nativa Android - Ministerio Heme Aquí</p>
+        <p>✅ APK Generada y Lista para Descargar</p>
+    </div>
+
+    <!-- Download Section -->
+    <div class="download-section">
+        <div class="download-card">
+            <div class="app-icon">🏪</div>
+            <h2>📱 APK Nativa Lista</h2>
+            <p><strong>Tamaño:</strong> 3.9 MB | <strong>Versión:</strong> 1.0.0</p>
+            
+            <a href="PULPERIA_COMUNITARIA_FINAL.apk" download="pulperia-comunitaria.apk" class="download-btn">
+                📥 DESCARGAR APK PRINCIPAL
+            </a>
+            
+            <a href="pulperia-comunitaria-NATIVA.apk" download="pulperia-comunitaria-backup.apk" class="download-btn secondary">
+                📥 DESCARGAR RESPALDO
+            </a>
+            
+            <div class="activation-code">
+                <h3>🔐 Código de Activación</h3>
+                <div class="code">120217</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Info -->
+    <div class="download-section">
+        <h2 style="text-align: center; margin-bottom: 30px;">📱 Vista Previa de tu App</h2>
+        
+        <div class="app-info">
+            <div class="info-item">
+                <h3>📊 Dashboard</h3>
+                <p>Resumen financiero completo con métricas en tiempo real</p>
+            </div>
+            <div class="info-item">
+                <h3>📦 Inventario</h3>
+                <p>Control total de productos y stock</p>
+            </div>
+            <div class="info-item">
+                <h3>💰 Ventas</h3>
+                <p>Sistema completo de ventas en efectivo y crédito</p>
+            </div>
+            <div class="info-item">
+                <h3>📈 Reportes</h3>
+                <p>Informes financieros detallados y exportables</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshots Mockup -->
+    <div class="download-section">
+        <div class="screenshots">
+            <h2 style="text-align: center; margin-bottom: 30px;">📱 Capturas de Pantalla</h2>
+            
+            <div class="screenshot-grid">
+                <div class="screenshot">
+                    <div class="phone-mockup">
+                        <div class="screen">
+                            <div class="status-bar"></div>
+                            <div class="app-content">
+                                <h4 style="color: #6c9a75; margin-bottom: 10px;">🏠 Dashboard</h4>
+                                <div style="background: #e8f5e8; padding: 5px; border-radius: 5px; margin: 2px 0;">
+                                    <strong>Efectivo: Bs 1,250.00</strong>
+                                </div>
+                                <div style="background: #e3f2fd; padding: 5px; border-radius: 5px; margin: 2px 0;">
+                                    Activos: Bs 5,430.00
+                                </div>
+                                <div style="background: #fff3e0; padding: 5px; border-radius: 5px; margin: 2px 0;">
+                                    Por Cobrar: Bs 890.00
+                                </div>
+                            </div>
+                            <div class="tab-bar">
+                                <div class="tab active"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Dashboard Financiero</h4>
+                    <p>Resumen completo de tu negocio</p>
+                </div>
+
+                <div class="screenshot">
+                    <div class="phone-mockup">
+                        <div class="screen">
+                            <div class="status-bar"></div>
+                            <div class="app-content">
+                                <h4 style="color: #6c9a75; margin-bottom: 10px;">📦 Inventario</h4>
+                                <div style="background: #f3e5f5; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Te Paris - Cant: 50
+                                </div>
+                                <div style="background: #f3e5f5; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Galletas - Cant: 30
+                                </div>
+                                <div style="background: #f3e5f5; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Arroz 3/4 - Cant: 25
+                                </div>
+                                <div style="background: #6c9a75; color: white; padding: 5px; border-radius: 5px; margin-top: 10px; font-size: 8px;">
+                                    + Agregar Producto
+                                </div>
+                            </div>
+                            <div class="tab-bar">
+                                <div class="tab"></div>
+                                <div class="tab active"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Control de Inventario</h4>
+                    <p>Gestión completa de productos</p>
+                </div>
+
+                <div class="screenshot">
+                    <div class="phone-mockup">
+                        <div class="screen">
+                            <div class="status-bar"></div>
+                            <div class="app-content">
+                                <h4 style="color: #6c9a75; margin-bottom: 10px;">💰 Ventas</h4>
+                                <div style="background: #e8f5e8; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Venta #001 - Bs 45.50
+                                </div>
+                                <div style="background: #fff3e0; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Venta #002 - Bs 32.00 (Crédito)
+                                </div>
+                                <div style="background: #e8f5e8; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Venta #003 - Bs 78.25
+                                </div>
+                                <div style="background: #6c9a75; color: white; padding: 5px; border-radius: 5px; margin-top: 10px; font-size: 8px;">
+                                    + Nueva Venta
+                                </div>
+                            </div>
+                            <div class="tab-bar">
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                                <div class="tab active"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Sistema de Ventas</h4>
+                    <p>Efectivo y crédito</p>
+                </div>
+
+                <div class="screenshot">
+                    <div class="phone-mockup">
+                        <div class="screen">
+                            <div class="status-bar"></div>
+                            <div class="app-content">
+                                <h4 style="color: #6c9a75; margin-bottom: 10px;">📈 Reportes</h4>
+                                <div style="background: #e3f2fd; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Capital Inicial: Bs 2,000
+                                </div>
+                                <div style="background: #e8f5e8; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Ingresos: Bs 3,450
+                                </div>
+                                <div style="background: #ffebee; padding: 3px; border-radius: 3px; margin: 1px 0; font-size: 8px;">
+                                    Gastos: Bs 1,200
+                                </div>
+                                <div style="background: #6c9a75; color: white; padding: 5px; border-radius: 5px; margin-top: 10px; font-size: 8px;">
+                                    📤 Exportar
+                                </div>
+                            </div>
+                            <div class="tab-bar">
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                                <div class="tab"></div>
+                                <div class="tab active"></div>
+                                <div class="tab"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <h4>Reportes Financieros</h4>
+                    <p>Análisis completo del negocio</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features">
+        <h2 style="text-align: center; margin-bottom: 40px; color: #2e3d31;">✨ Características de tu App Nativa</h2>
+        
+        <div class="feature-grid">
+            <div class="feature">
+                <h3><span class="feature-icon">📱</span>App Nativa Real</h3>
+                <p>Aplicación Android nativa compilada con Capacitor. No es una app web, funciona como cualquier app descargada de Google Play.</p>
+            </div>
+            
+            <div class="feature">
+                <h3><span class="feature-icon">💾</span>Almacenamiento Local</h3>
+                <p>Todos los datos se guardan en tu dispositivo usando AsyncStorage. Privacidad total y funcionamiento offline.</p>
+            </div>
+            
+            <div class="feature">
+                <h3><span class="feature-icon">🔒</span>Seguridad Total</h3>
+                <p>Código de activación, licencia de 90 días, y datos encriptados localmente. Sin dependencias externas.</p>
+            </div>
+            
+            <div class="feature">
+                <h3><span class="feature-icon">📊</span>Gestión Completa</h3>
+                <p>Dashboard, inventario, ventas, deudas, capital, gastos, suscripciones y reportes. Todo lo que necesitas.</p>
+            </div>
+            
+            <div class="feature">
+                <h3><span class="feature-icon">🎨</span>Interfaz Móvil</h3>
+                <p>Navegación por pestañas, botones flotantes, modales nativos y animaciones optimizadas para touch.</p>
+            </div>
+            
+            <div class="feature">
+                <h3><span class="feature-icon">⚡</span>Rendimiento Nativo</h3>
+                <p>Velocidad de app nativa, sin lag de navegador web. Optimizada para dispositivos Android.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Download Section -->
+    <div class="download-section">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+            <h2>🎉 ¡Descarga tu APK Nativa Ahora!</h2>
+            
+            <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                <h3>📂 Enlaces Directos de Descarga:</h3>
+                <p><strong>Archivo Principal:</strong></p>
+                <a href="PULPERIA_COMUNITARIA_FINAL.apk" download="pulperia-comunitaria.apk" class="download-btn">
+                    📥 PULPERIA_COMUNITARIA_FINAL.apk (3.9 MB)
+                </a>
+                
+                <p><strong>Archivo Respaldo:</strong></p>
+                <a href="pulperia-comunitaria-NATIVA.apk" download="pulperia-comunitaria-backup.apk" class="download-btn secondary">
+                    📥 pulperia-comunitaria-NATIVA.apk (3.9 MB)
+                </a>
+            </div>
+
+            <div style="background: #d1ecf1; border: 2px solid #bee5eb; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                <h3>📲 Instalación en Android:</h3>
+                <ol style="text-align: left; max-width: 400px; margin: 0 auto;">
+                    <li>Descarga la APK tocando el botón de arriba</li>
+                    <li>Ve a <strong>Configuración → Seguridad</strong></li>
+                    <li>Activa <strong>"Fuentes desconocidas"</strong></li>
+                    <li>Toca el archivo APK descargado</li>
+                    <li>Toca <strong>"Instalar"</strong></li>
+                    <li>Abre la app e introduce el código: <strong>120217</strong></li>
+                </ol>
+            </div>
+
+            <div style="background: #f8d7da; border: 2px solid #f5c6cb; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                <h3>🔍 Si no puedes descargar:</h3>
+                <p>Busca estos archivos en tu explorador de archivos:</p>
+                <ul style="text-align: left; max-width: 400px; margin: 0 auto;">
+                    <li><code>PULPERIA_COMUNITARIA_FINAL.apk</code></li>
+                    <li><code>pulperia-comunitaria-NATIVA.apk</code></li>
+                </ul>
+                <p>Ubicación: <code>/workspace/</code></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar disponibilidad de archivos
+        function checkAndShowDownload() {
+            const files = ['PULPERIA_COMUNITARIA_FINAL.apk', 'pulperia-comunitaria-NATIVA.apk'];
+            
+            files.forEach(filename => {
+                fetch(filename, {method: 'HEAD'})
+                    .then(response => {
+                        if (response.ok) {
+                            console.log(`✅ ${filename} disponible para descarga`);
+                        } else {
+                            console.log(`❌ ${filename} no encontrado`);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(`❌ Error verificando ${filename}:`, error);
+                    });
+            });
+        }
+        
+        // Verificar archivos al cargar
+        checkAndShowDownload();
+        
+        // Mostrar información al hacer clic en descargar
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                alert('🎉 ¡Descargando tu APK nativa!\n\n📱 Archivo: ' + this.getAttribute('href') + '\n🔐 Código: 120217\n\n¡Instala en tu Android y disfruta!');
+            });
+        });
+    </script>
+</body>
+</html>
