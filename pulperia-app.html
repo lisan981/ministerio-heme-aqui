@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6c9a75">
+    <title>Pulpería Comunitaria</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f7f9f3; 
+            color: #2e3d31;
+            overflow-x: hidden;
+        }
+        .container { max-width: 420px; margin: 0 auto; min-height: 100vh; }
+        .header { background: linear-gradient(135deg, #6c9a75, #5b8764); color: white; padding: 20px; text-align: center; }
+        .card { background: white; margin: 10px; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn { background: #6c9a75; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 5px; width: 100%; }
+        .btn:hover { background: #5b8764; }
+        .input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 8px 0; font-size: 16px; }
+        .tabs { display: flex; background: white; border-radius: 12px; overflow: hidden; margin: 10px; }
+        .tab { flex: 1; padding: 15px; text-align: center; background: #f0f0f0; cursor: pointer; font-weight: bold; }
+        .tab.active { background: #6c9a75; color: white; }
+        .hidden { display: none; }
+        .stat { display: flex; justify-content: space-between; margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+        .product-item { background: #f8f9fa; padding: 15px; margin: 8px 0; border-radius: 8px; border-left: 4px solid #6c9a75; }
+        .sale-item { background: #e8f5e8; padding: 12px; margin: 8px 0; border-radius: 8px; }
+        .fab { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #6c9a75; color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 8px; margin: 10px 0; }
+        .code-display { background: #e8f5e8; border: 3px solid #6c9a75; padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0; }
+        .code-number { font-size: 32px; font-weight: bold; font-family: monospace; color: #2e3d31; letter-spacing: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de Login -->
+        <div id="loginScreen">
+            <div class="header">
+                <div style="font-size: 60px; margin-bottom: 10px;">🏪</div>
+                <h1>Pulpería Comunitaria</h1>
+                <p>Ministerio Heme Aquí</p>
+            </div>
+            <div class="card">
+                <h2>🔐 Activación Requerida</h2>
+                <input type="text" id="nombre" class="input" placeholder="Tu nombre completo" />
+                <input type="email" id="email" class="input" placeholder="Tu correo electrónico" />
+                <input type="password" id="codigo" class="input" placeholder="Código de activación" />
+                <button class="btn" onclick="activarApp()">Activar Aplicación</button>
+                <div id="mensajeLogin"></div>
+                <div class="code-display">
+                    <p>Código de activación:</p>
+                    <div class="code-number">120217</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- App Principal -->
+        <div id="appScreen" class="hidden">
+            <div class="header">
+                <h1>🏪 Pulpería Comunitaria</h1>
+                <p id="nombreUsuario">Bienvenido</p>
+            </div>
+
+            <!-- Navegación -->
+            <div class="tabs">
+                <div class="tab active" onclick="mostrarTab('dashboard')">📊</div>
+                <div class="tab" onclick="mostrarTab('inventario')">📦</div>
+                <div class="tab" onclick="mostrarTab('ventas')">💰</div>
+                <div class="tab" onclick="mostrarTab('reportes')">📈</div>
+                <div class="tab" onclick="mostrarTab('ajustes')">⚙️</div>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard" class="card">
+                <h3>📊 Dashboard Financiero</h3>
+                <div class="stat">
+                    <span>💰 Efectivo:</span>
+                    <strong id="efectivoDisplay">Bs 0.00</strong>
+                </div>
+                <div class="stat">
+                    <span>📦 Productos:</span>
+                    <strong id="totalProductos">0</strong>
+                </div>
+                <div class="stat">
+                    <span>💳 Ventas:</span>
+                    <strong id="totalVentas">Bs 0.00</strong>
+                </div>
+                <div class="stat">
+                    <span>🏦 Por Cobrar:</span>
+                    <strong id="totalDeudas">Bs 0.00</strong>
+                </div>
+            </div>
+
+            <!-- Inventario -->
+            <div id="inventario" class="card hidden">
+                <h3>📦 Gestión de Inventario</h3>
+                <input type="text" id="nombreProducto" class="input" placeholder="Nombre del producto" />
+                <input type="number" id="cantidadProducto" class="input" placeholder="Cantidad" min="1" />
+                <input type="number" id="costoProducto" class="input" placeholder="Costo unitario (Bs)" step="0.01" min="0" />
+                <input type="number" id="precioProducto" class="input" placeholder="Precio de venta (Bs)" step="0.01" min="0" />
+                <button class="btn" onclick="agregarProducto()">➕ Agregar Producto</button>
+                <div id="listaProductos"></div>
+            </div>
+
+            <!-- Ventas -->
+            <div id="ventas" class="card hidden">
+                <h3>💰 Registro de Ventas</h3>
+                <select id="productoVenta" class="input">
+                    <option value="">Seleccionar producto</option>
+                </select>
+                <input type="number" id="cantidadVenta" class="input" placeholder="Cantidad a vender" min="1" />
+                <div style="margin: 15px 0;">
+                    <label style="margin-right: 20px;">
+                        <input type="radio" name="tipoVenta" value="efectivo" checked /> 💵 Efectivo
+                    </label>
+                    <label>
+                        <input type="radio" name="tipoVenta" value="credito" /> 💳 Crédito
+                    </label>
+                </div>
+                <input type="text" id="deudorVenta" class="input" placeholder="Nombre del deudor (solo crédito)" />
+                <button class="btn" onclick="realizarVenta()">🛒 Registrar Venta</button>
+                <div id="listaVentas"></div>
+            </div>
+
+            <!-- Reportes -->
+            <div id="reportes" class="card hidden">
+                <h3>📈 Reportes Financieros</h3>
+                <div class="stat">
+                    <span>💰 Capital Inicial:</span>
+                    <strong id="capitalInicial">Bs 0.00</strong>
+                </div>
+                <div class="stat">
+                    <span>💵 Efectivo Actual:</span>
+                    <strong id="efectivoReporte">Bs 0.00</strong>
+                </div>
+                <div class="stat">
+                    <span>📊 Total Ingresos:</span>
+                    <strong id="totalIngresos">Bs 0.00</strong>
+                </div>
+                <div class="stat">
+                    <span>📈 Ganancia Total:</span>
+                    <strong id="gananciaTotal">Bs 0.00</strong>
+                </div>
+                <button class="btn" onclick="exportarReporte()">📤 Exportar Reporte</button>
+                <div id="historialVentas"></div>
+            </div>
+
+            <!-- Ajustes -->
+            <div id="ajustes" class="card hidden">
+                <h3>⚙️ Configuración</h3>
+                <div class="stat">
+                    <span>👤 Usuario:</span>
+                    <strong id="usuarioActual">-</strong>
+                </div>
+                <div class="stat">
+                    <span>📅 Activación:</span>
+                    <strong id="fechaActivacion">-</strong>
+                </div>
+                <button class="btn" onclick="exportarDatos()" style="background: #2196F3;">💾 Exportar Datos</button>
+                <button class="btn" onclick="limpiarDatos()" style="background: #F44336;">🗑️ Limpiar Datos</button>
+                <button class="btn" onclick="cerrarSesion()" style="background: #FF9800;">🚪 Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- Mensaje global -->
+        <div id="mensajeGlobal"></div>
+    </div>
+
+    <script>
+        // Variables globales
+        let productos = JSON.parse(localStorage.getItem('pulperia_productos') || '[]');
+        let ventas = JSON.parse(localStorage.getItem('pulperia_ventas') || '[]');
+        let deudas = JSON.parse(localStorage.getItem('pulperia_deudas') || '[]');
+        let efectivo = parseFloat(localStorage.getItem('pulperia_efectivo') || '0');
+        let capitalInicial = parseFloat(localStorage.getItem('pulperia_capital') || '0');
+        let configurado = localStorage.getItem('pulperia_configurado') === 'true';
+        let currentTab = 'dashboard';
+
+        const activationCode = '120217';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            if (configurado) {
+                mostrarApp();
+            }
+        });
+
+        function activarApp() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const codigo = document.getElementById('codigo').value.trim();
+
+            if (!nombre || !email) {
+                mostrarMensaje('❌ Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            if (codigo !== activationCode) {
+                mostrarMensaje('❌ Código de activación incorrecto', 'error');
+                return;
+            }
+
+            // Guardar configuración
+            localStorage.setItem('pulperia_configurado', 'true');
+            localStorage.setItem('pulperia_nombre', nombre);
+            localStorage.setItem('pulperia_email', email);
+            localStorage.setItem('pulperia_activacion', new Date().toISOString());
+
+            configurado = true;
+            mostrarApp();
+            mostrarMensaje('✅ ¡Activación exitosa! Bienvenido a Pulpería Comunitaria', 'success');
+        }
+
+        function mostrarApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.remove('hidden');
+            document.getElementById('nombreUsuario').textContent = localStorage.getItem('pulperia_nombre') || 'Usuario';
+            actualizarTodo();
+        }
+
+        function mostrarTab(tab) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.card').forEach(card => {
+                if (card.parentElement.id === 'appScreen') {
+                    card.classList.add('hidden');
+                }
+            });
+            
+            // Remover clase active de todas las tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            // Mostrar tab seleccionada
+            document.getElementById(tab).classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            currentTab = tab;
+            actualizarTodo();
+        }
+
+        function agregarProducto() {
+            const nombre = document.getElementById('nombreProducto').value.trim();
+            const cantidad = parseInt(document.getElementById('cantidadProducto').value);
+            const costo = parseFloat(document.getElementById('costoProducto').value);
+            const precio = parseFloat(document.getElementById('precioProducto').value);
+
+            if (!nombre || !cantidad || !costo || !precio) {
+                mostrarMensaje('❌ Completa todos los campos del producto', 'error');
+                return;
+            }
+
+            if (cantidad <= 0 || costo < 0 || precio < 0) {
+                mostrarMensaje('❌ Los valores deben ser positivos', 'error');
+                return;
+            }
+
+            const producto = {
+                id: Date.now(),
+                nombre, cantidad, costo, precio,
+                timestamp: new Date().toISOString()
+            };
+
+            productos.push(producto);
+            localStorage.setItem('pulperia_productos', JSON.stringify(productos));
+
+            // Limpiar formulario
+            document.getElementById('nombreProducto').value = '';
+            document.getElementById('cantidadProducto').value = '';
+            document.getElementById('costoProducto').value = '';
+            document.getElementById('precioProducto').value = '';
+
+            actualizarProductos();
+            actualizarDashboard();
+            mostrarMensaje('✅ Producto agregado exitosamente', 'success');
+        }
+
+        function realizarVenta() {
+            const productoNombre = document.getElementById('productoVenta').value;
+            const cantidad = parseInt(document.getElementById('cantidadVenta').value);
+            const tipo = document.querySelector('input[name="tipoVenta"]:checked').value;
+            const deudor = document.getElementById('deudorVenta').value.trim();
+
+            if (!productoNombre || !cantidad) {
+                mostrarMensaje('❌ Selecciona producto y cantidad', 'error');
+                return;
+            }
+
+            if (tipo === 'credito' && !deudor) {
+                mostrarMensaje('❌ Especifica el deudor para ventas a crédito', 'error');
+                return;
+            }
+
+            const producto = productos.find(p => p.nombre === productoNombre);
+            if (!producto) {
+                mostrarMensaje('❌ Producto no encontrado', 'error');
+                return;
+            }
+
+            if (producto.cantidad < cantidad) {
+                mostrarMensaje('❌ Stock insuficiente. Disponible: ' + producto.cantidad, 'error');
+                return;
+            }
+
+            const total = producto.precio * cantidad;
+            const ganancia = (producto.precio - producto.costo) * cantidad;
+
+            // Actualizar stock
+            producto.cantidad -= cantidad;
+
+            // Registrar venta
+            const venta = {
+                id: Date.now(),
+                producto: productoNombre,
+                cantidad, total, ganancia, tipo, deudor,
+                timestamp: new Date().toISOString()
+            };
+
+            ventas.push(venta);
+
+            // Actualizar efectivo o crear deuda
+            if (tipo === 'efectivo') {
+                efectivo += total;
+                localStorage.setItem('pulperia_efectivo', efectivo.toString());
+            } else {
+                const deuda = {
+                    id: Date.now(),
+                    deudor, monto: total,
+                    concepto: `Venta: ${productoNombre} (${cantidad})`,
+                    timestamp: new Date().toISOString()
+                };
+                deudas.push(deuda);
+                localStorage.setItem('pulperia_deudas', JSON.stringify(deudas));
+            }
+
+            localStorage.setItem('pulperia_productos', JSON.stringify(productos));
+            localStorage.setItem('pulperia_ventas', JSON.stringify(ventas));
+
+            // Limpiar formulario
+            document.getElementById('cantidadVenta').value = '';
+            document.getElementById('deudorVenta').value = '';
+
+            actualizarTodo();
+            mostrarMensaje('✅ Venta registrada: Bs ' + total.toFixed(2), 'success');
+        }
+
+        function actualizarTodo() {
+            actualizarDashboard();
+            actualizarProductos();
+            actualizarVentas();
+            actualizarReportes();
+            actualizarAjustes();
+        }
+
+        function actualizarDashboard() {
+            document.getElementById('efectivoDisplay').textContent = 'Bs ' + efectivo.toFixed(2);
+            document.getElementById('totalProductos').textContent = productos.length;
+            document.getElementById('totalVentas').textContent = 'Bs ' + ventas.reduce((sum, v) => sum + v.total, 0).toFixed(2);
+            document.getElementById('totalDeudas').textContent = 'Bs ' + deudas.reduce((sum, d) => sum + d.monto, 0).toFixed(2);
+        }
+
+        function actualizarProductos() {
+            const lista = document.getElementById('listaProductos');
+            const select = document.getElementById('productoVenta');
+
+            lista.innerHTML = productos.map(p => 
+                `<div class="product-item">
+                    <strong>${p.nombre}</strong><br>
+                    Stock: ${p.cantidad} | Costo: Bs ${p.costo.toFixed(2)} | Precio: Bs ${p.precio.toFixed(2)}<br>
+                    <small>${new Date(p.timestamp).toLocaleDateString()}</small>
+                    <button onclick="eliminarProducto(${p.id})" style="float: right; background: #F44336; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
+                </div>`
+            ).join('');
+
+            select.innerHTML = '<option value="">Seleccionar producto</option>' +
+                productos.filter(p => p.cantidad > 0).map(p => 
+                    `<option value="${p.nombre}">${p.nombre} (Stock: ${p.cantidad})</option>`
+                ).join('');
+        }
+
+        function actualizarVentas() {
+            const lista = document.getElementById('listaVentas');
+            lista.innerHTML = ventas.slice(-10).reverse().map(v => 
+                `<div class="sale-item">
+                    <strong>Bs ${v.total.toFixed(2)}</strong> - ${v.producto} (${v.cantidad})<br>
+                    Tipo: ${v.tipo} ${v.deudor ? '- ' + v.deudor : ''}<br>
+                    <small>${new Date(v.timestamp).toLocaleDateString()}</small>
+                </div>`
+            ).join('');
+        }
+
+        function actualizarReportes() {
+            const totalIngresos = ventas.filter(v => v.tipo === 'efectivo').reduce((sum, v) => sum + v.total, 0);
+            const gananciaTotal = ventas.reduce((sum, v) => sum + v.ganancia, 0);
+
+            document.getElementById('capitalInicial').textContent = 'Bs ' + capitalInicial.toFixed(2);
+            document.getElementById('efectivoReporte').textContent = 'Bs ' + efectivo.toFixed(2);
+            document.getElementById('totalIngresos').textContent = 'Bs ' + totalIngresos.toFixed(2);
+            document.getElementById('gananciaTotal').textContent = 'Bs ' + gananciaTotal.toFixed(2);
+
+            const historial = document.getElementById('historialVentas');
+            historial.innerHTML = '<h4>📊 Últimas Ventas:</h4>' + 
+                ventas.slice(-5).reverse().map(v => 
+                    `<div style="background: #f0f0f0; padding: 10px; margin: 5px 0; border-radius: 8px;">
+                        <strong>Bs ${v.total.toFixed(2)}</strong> - ${v.producto}<br>
+                        Ganancia: Bs ${v.ganancia.toFixed(2)} | ${v.tipo}<br>
+                        <small>${new Date(v.timestamp).toLocaleDateString()}</small>
+                    </div>`
+                ).join('');
+        }
+
+        function actualizarAjustes() {
+            document.getElementById('usuarioActual').textContent = localStorage.getItem('pulperia_nombre') || '-';
+            document.getElementById('fechaActivacion').textContent = 
+                localStorage.getItem('pulperia_activacion') ? 
+                new Date(localStorage.getItem('pulperia_activacion')).toLocaleDateString() : '-';
+        }
+
+        function eliminarProducto(id) {
+            if (confirm('¿Eliminar este producto?')) {
+                productos = productos.filter(p => p.id !== id);
+                localStorage.setItem('pulperia_productos', JSON.stringify(productos));
+                actualizarProductos();
+                actualizarDashboard();
+                mostrarMensaje('✅ Producto eliminado', 'success');
+            }
+        }
+
+        function exportarReporte() {
+            const reporte = `REPORTE PULPERÍA COMUNITARIA
+Fecha: ${new Date().toLocaleDateString()}
+Usuario: ${localStorage.getItem('pulperia_nombre')}
+
+=== RESUMEN FINANCIERO ===
+Capital Inicial: Bs ${capitalInicial.toFixed(2)}
+Efectivo Actual: Bs ${efectivo.toFixed(2)}
+Total Ingresos: Bs ${ventas.filter(v => v.tipo === 'efectivo').reduce((sum, v) => sum + v.total, 0).toFixed(2)}
+Ganancia Total: Bs ${ventas.reduce((sum, v) => sum + v.ganancia, 0).toFixed(2)}
+
+=== INVENTARIO ===
+${productos.map(p => `${p.nombre}: ${p.cantidad} unidades - Bs ${p.precio.toFixed(2)}`).join('\n')}
+
+=== VENTAS RECIENTES ===
+${ventas.slice(-10).map(v => `${new Date(v.timestamp).toLocaleDateString()} - ${v.producto}: Bs ${v.total.toFixed(2)} (${v.tipo})`).join('\n')}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Reporte Pulpería Comunitaria',
+                    text: reporte
+                });
+            } else {
+                // Crear enlace de descarga
+                const blob = new Blob([reporte], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'reporte-pulperia-' + new Date().toISOString().split('T')[0] + '.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            mostrarMensaje('✅ Reporte exportado', 'success');
+        }
+
+        function exportarDatos() {
+            const datos = {
+                productos, ventas, deudas, efectivo, capitalInicial,
+                nombre: localStorage.getItem('pulperia_nombre'),
+                email: localStorage.getItem('pulperia_email'),
+                activacion: localStorage.getItem('pulperia_activacion')
+            };
+
+            const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'backup-pulperia-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            mostrarMensaje('✅ Datos exportados como backup', 'success');
+        }
+
+        function limpiarDatos() {
+            if (confirm('¿Estás seguro de eliminar TODOS los datos? Esta acción no se puede deshacer.')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.removeItem('pulperia_configurado');
+                location.reload();
+            }
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const div = document.getElementById('mensajeGlobal');
+            div.innerHTML = `<div class="${tipo}" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; max-width: 90%;">${mensaje}</div>`;
+            setTimeout(() => div.innerHTML = '', 3000);
+        }
+
+        // Actualizar display inicial
+        if (configurado) {
+            actualizarTodo();
+        }
+    </script>
+</body>
+</html>
