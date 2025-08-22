@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Notas - App Offline</title>
+	<link rel="stylesheet" href="./assets/style.css" />
+	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+	<header class="app-header">
+		<h1>Mis Notas</h1>
+		<div class="search-group">
+			<input id="searchInput" type="search" placeholder="Buscar notas..." aria-label="Buscar notas" />
+		</div>
+	</header>
+
+	<main class="container">
+		<section class="editor" aria-label="Editor de nota">
+			<form id="noteForm" autocomplete="off">
+				<input id="noteTitle" type="text" placeholder="Título" aria-label="Título" />
+				<textarea id="noteBody" placeholder="Escribe tu nota aquí..." aria-label="Contenido"></textarea>
+				<div class="toolbar">
+					<button id="saveBtn" type="submit">Guardar</button>
+					<button id="clearBtn" type="button" class="secondary">Limpiar</button>
+				</div>
+			</form>
+		</section>
+
+		<section class="list" aria-label="Lista de notas">
+			<ul id="notesList" class="notes"></ul>
+		</section>
+	</main>
+
+	<footer class="app-footer">
+		<small>Guardado localmente en tu navegador. No se envían datos.</small>
+	</footer>
+
+	<script src="./assets/app.js"></script>
+</body>
+</html>
