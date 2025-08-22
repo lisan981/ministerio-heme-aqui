@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descarga APK - Pulpería Comunitaria</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6c9a75 0%, #5b8764 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: #6c9a75;
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        h1 {
+            color: #2e3d31;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #6c9a75;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        .download-btn {
+            background: #6c9a75;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            background: #5b8764;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .code {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e3d31;
+            margin: 10px 0;
+        }
+        .steps {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #6c9a75;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🏪</div>
+        <h1>Pulpería Comunitaria</h1>
+        <p class="subtitle">Ministerio Heme Aquí</p>
+        
+        <div class="info">
+            <h3>📱 APK Nativa Lista para Descargar</h3>
+            <p><strong>Tamaño:</strong> 3.9 MB</p>
+            <p><strong>Versión:</strong> 1.0.0</p>
+            <p><strong>Compatible:</strong> Android 5.1+</p>
+        </div>
+
+        <a href="PULPERIA_COMUNITARIA_FINAL.apk" download="pulperia-comunitaria.apk" class="download-btn">
+            📥 DESCARGAR APK NATIVA
+        </a>
+        
+        <a href="pulperia-comunitaria-NATIVA.apk" download="pulperia-comunitaria-backup.apk" class="download-btn">
+            📥 DESCARGAR RESPALDO
+        </a>
+
+        <div class="info">
+            <h3>🔐 Código de Activación</h3>
+            <div class="code">120217</div>
+        </div>
+
+        <div class="steps">
+            <h3>📲 Pasos para Instalar:</h3>
+            <div class="step">1️⃣ Descarga la APK tocando el botón de arriba</div>
+            <div class="step">2️⃣ Habilita "Fuentes desconocidas" en Configuración → Seguridad</div>
+            <div class="step">3️⃣ Toca el archivo APK descargado</div>
+            <div class="step">4️⃣ Toca "Instalar"</div>
+            <div class="step">5️⃣ Abre la app e introduce el código: <strong>120217</strong></div>
+        </div>
+
+        <div class="info">
+            <h3>✅ Funcionalidades Incluidas:</h3>
+            <p>• Dashboard financiero completo<br>
+            • Inventario de productos<br>
+            • Sistema de ventas (efectivo/crédito)<br>
+            • Control de deudas<br>
+            • Gestión de capital<br>
+            • Control de gastos<br>
+            • Suscripciones<br>
+            • Reportes exportables<br>
+            • Almacenamiento local seguro</p>
+        </div>
+
+        <p style="color: #666; font-size: 14px; margin-top: 30px;">
+            🎉 ¡Tu aplicación nativa está completamente funcional!<br>
+            Todos los datos se guardan localmente en tu dispositivo.
+        </p>
+    </div>
+
+    <script>
+        // Verificar si los archivos existen
+        function checkFile(filename) {
+            fetch(filename, {method: 'HEAD'})
+                .then(response => {
+                    if (!response.ok) {
+                        document.querySelector(`a[href="${filename}"]`).style.display = 'none';
+                    }
+                })
+                .catch(() => {
+                    document.querySelector(`a[href="${filename}"]`).style.display = 'none';
+                });
+        }
+        
+        checkFile('PULPERIA_COMUNITARIA_FINAL.apk');
+        checkFile('pulperia-comunitaria-NATIVA.apk');
+    </script>
+</body>
+</html>
