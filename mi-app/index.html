@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi App - Lista de Tareas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app" aria-labelledby="app-title">
+    <header class="header">
+      <h1 id="app-title">Lista de tareas</h1>
+      <form id="todo-form" autocomplete="off">
+        <label for="todo-input" class="sr-only">Nueva tarea</label>
+        <input id="todo-input" name="todo" type="text" placeholder="¿Qué necesitas hacer?" maxlength="200" required>
+        <button type="submit" class="primary">Agregar</button>
+      </form>
+    </header>
+
+    <section class="controls">
+      <div class="filters" role="tablist" aria-label="Filtros">
+        <button class="filter is-active" data-filter="all" role="tab" aria-selected="true">Todas</button>
+        <button class="filter" data-filter="active" role="tab" aria-selected="false">Activas</button>
+        <button class="filter" data-filter="completed" role="tab" aria-selected="false">Completadas</button>
+      </div>
+      <div class="counter" aria-live="polite">
+        <span id="items-left">0</span> pendientes
+      </div>
+    </section>
+
+    <ul id="todo-list" class="todo-list" aria-live="polite" aria-label="Lista de tareas"></ul>
+
+    <footer class="footer">
+      <button id="clear-completed" class="danger" type="button" disabled>Eliminar completadas</button>
+    </footer>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
