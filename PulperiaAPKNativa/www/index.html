@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pulpería Comunitaria - App Móvil</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6c9a75">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Pulpería Comunitaria">
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pulperia: {
+                            primary: '#6c9a75',
+                            secondary: '#5b8764',
+                            background: '#f7f9f3',
+                            card: '#ffffff',
+                            text: '#2e3d31',
+                        }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons Setup -->
+    <script>
+        window.lucideReact = {};
+        const iconNames = [
+            'Home', 'Package', 'ShoppingCart', 'FileText', 'Menu', 'Plus', 
+            'Trash2', 'Edit3', 'Check', 'X', 'Calendar', 'Users', 'TrendingUp',
+            'DollarSign', 'CreditCard', 'Building', 'Settings', 'Download',
+            'Upload', 'Camera', 'LogOut', 'AlertCircle', 'CheckCircle'
+        ];
+
+        iconNames.forEach(iconName => {
+            window.lucideReact[iconName] = ({ size = 20, color = 'currentColor', className = '', ...props }) => {
+                const svgData = lucide.icons[iconName].contents;
+                return React.createElement('svg', {
+                    xmlns: 'http://www.w3.org/2000/svg',
+                    width: size,
+                    height: size,
+                    viewBox: '0 0 24 24',
+                    fill: 'none',
+                    stroke: color,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                    strokeLinejoin: 'round',
+                    className: className,
+                    ...props,
+                    dangerouslySetInnerHTML: { __html: svgData }
+                });
+            };
+        });
+    </script>
+    
+    <style>
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Mobile optimizations */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior: none;
+        }
+        
+        /* Hide scrollbars but keep functionality */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Mobile touch improvements */
+        .touch-action {
+            touch-action: manipulation;
+        }
+        
+        /* Safe area for mobile */
+        .safe-area {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* Card hover effects for mobile */
+        .mobile-card {
+            transition: all 0.2s ease;
+        }
+        
+        .mobile-card:active {
+            transform: scale(0.98);
+        }
+        
+        /* Custom tab bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            z-index: 999;
+        }
+    </style>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(registrationError => console.log('SW registration failed'));
+            });
+        }
+    </script>
+</head>
+<body class="bg-pulperia-background min-h-screen overflow-x-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { 
+            Home, Package, ShoppingCart, FileText, Menu, Plus, Trash2, Edit3, 
+            Check, X, Calendar, Users, TrendingUp, DollarSign, CreditCard, 
+            Building, Settings, Download, Upload, Camera, LogOut, AlertCircle, CheckCircle 
+        } = window.lucideReact;
+
+        // Storage Service para LocalStorage
+        class StorageService {
+            constructor() {
+                this.keys = {
+                    PROFILE: 'pulperia_profile_data',
+                    PRODUCTOS: 'pulperia_productos',
+                    MATERIALES: 'pulperia_materiales',
+                    DEUDAS: 'pulperia_deudas',
+                    VENTAS: 'pulperia_ventas',
+                    GASTOS: 'pulperia_gastos',
+                    CAPITAL: 'pulperia_capital_injections',
+                    SUSCRIPCIONES: 'pulperia_suscripciones',
+                    REPORTES: 'pulperia_quarterly_reports',
+                    PRODUCTOS_BASE: 'pulperia_productos_base'
+                };
+            }
+
+            setItem(key, value) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                } catch (error) {
+                    console.error(`Error saving ${key}:`, error);
+                    return false;
+                }
+            }
+
+            getItem(key) {
+                try {
+                    const item = localStorage.getItem(key);
+                    return item ? JSON.parse(item) : null;
+                } catch (error) {
+                    console.error(`Error getting ${key}:`, error);
+                    return null;
+                }
+            }
+
+            // Métodos específicos
+            saveProfile(profileData) { return this.setItem(this.keys.PROFILE, profileData); }
+            getProfile() { return this.getItem(this.keys.PROFILE); }
+            
+            saveProductos(productos) { return this.setItem(this.keys.PRODUCTOS, productos); }
+            getProductos() { return this.getItem(this.keys.PRODUCTOS) || []; }
+            
+            addProducto(producto) {
+                const productos = this.getProductos();
+                const newProducto = { id: Date.now().toString(), timestamp: new Date().toISOString(), ...producto };
+                productos.push(newProducto);
+                this.saveProductos(productos);
+                return newProducto;
+            }
+            
+            updateProducto(id, updates) {
+                const productos = this.getProductos();
+                const index = productos.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    productos[index] = { ...productos[index], ...updates };
+                    this.saveProductos(productos);
+                    return productos[index];
+                }
+                return null;
+            }
+            
+            deleteProducto(id) {
+                const productos = this.getProductos();
+                const filtered = productos.filter(p => p.id !== id);
+                this.saveProductos(filtered);
+                return true;
+            }
+
+            // Métodos similares para otros tipos de datos
+            getVentas() { return this.getItem(this.keys.VENTAS) || []; }
+            addVenta(venta) {
+                const ventas = this.getVentas();
+                const newVenta = { id: Date.now().toString(), timestamp: new Date().toISOString(), ...venta };
+                ventas.push(newVenta);
+                this.setItem(this.keys.VENTAS, ventas);
+                return newVenta;
+            }
+
+            getDeudas() { return this.getItem(this.keys.DEUDAS) || []; }
+            addDeuda(deuda) {
+                const deudas = this.getDeudas();
+                const newDeuda = { id: Date.now().toString(), timestamp: new Date().toISOString(), ...deuda };
+                deudas.push(newDeuda);
+                this.setItem(this.keys.DEUDAS, deudas);
+                return newDeuda;
+            }
+
+            updateDeuda(id, updates) {
+                const deudas = this.getDeudas();
+                const index = deudas.findIndex(d => d.id === id);
+                if (index !== -1) {
+                    deudas[index] = { ...deudas[index], ...updates };
+                    this.setItem(this.keys.DEUDAS, deudas);
+                    return deudas[index];
+                }
+                return null;
+            }
+
+            deleteDeuda(id) {
+                const deudas = this.getDeudas();
+                const filtered = deudas.filter(d => d.id !== id);
+                this.setItem(this.keys.DEUDAS, filtered);
+                return true;
+            }
+
+            getProductosBase() {
+                return this.getItem(this.keys.PRODUCTOS_BASE) || [
+                    'Te Paris', 'Galletas', 'Cereales', 'Arroz 3/4', 'Fideo Famosa',
+                    'Azúcar blanca', 'Harina Pampa blanca', 'Lavandina', 'Jaboncillo',
+                    'Ace brillo', 'Mantequilla', 'Mermelada', 'Sal', 'Sardina',
+                    'Picadillo', 'Shampoo', 'Harry el limonero', 'Salsa soja',
+                    'Vinagre', 'Doña gusta'
+                ];
+            }
+
+            saveProductosBase(productos) { return this.setItem(this.keys.PRODUCTOS_BASE, productos); }
+        }
+
+        const storageService = new StorageService();
+
+        // Componente principal de la aplicación
+        const PulperiaApp = () => {
+            const [currentView, setCurrentView] = useState('login');
+            const [isConfigured, setIsConfigured] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState('');
+            const [profileData, setProfileData] = useState(null);
+            const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+            // Estados financieros
+            const [efectivo, setEfectivo] = useState(0);
+            const [capitalInicial, setCapitalInicial] = useState(0);
+            const [productos, setProductos] = useState([]);
+            const [ventas, setVentas] = useState([]);
+            const [deudas, setDeudas] = useState([]);
+
+            // Código de activación
+            const activationCode = '120217';
+
+            useEffect(() => {
+                checkInitialStatus();
+            }, []);
+
+            const checkInitialStatus = async () => {
+                try {
+                    const profile = storageService.getProfile();
+                    if (profile) {
+                        setProfileData(profile);
+                        setEfectivo(profile.efectivo || 0);
+                        setCapitalInicial(profile.capitalInicial || 0);
+                        
+                        if (!profile.configured) {
+                            setIsConfigured(false);
+                            setCurrentView('configuracion');
+                        } else {
+                            setIsConfigured(true);
+                            // Verificar activación
+                            const activationDate = profile.activationDate ? new Date(profile.activationDate) : null;
+                            if (activationDate) {
+                                const expirationDate = new Date(activationDate);
+                                expirationDate.setDate(expirationDate.getDate() + 90);
+                                if (new Date() <= expirationDate) {
+                                    setCurrentView('dashboard');
+                                    loadAllData();
+                                } else {
+                                    setCurrentView('configuracion');
+                                }
+                            } else {
+                                setCurrentView('configuracion');
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking initial status:', error);
+                }
+            };
+
+            const loadAllData = () => {
+                setProductos(storageService.getProductos());
+                setVentas(storageService.getVentas());
+                setDeudas(storageService.getDeudas());
+            };
+
+            const handleLogin = async (name, email, code) => {
+                if (code !== activationCode) {
+                    setMessage("Código de activación incorrecto");
+                    return;
+                }
+
+                setLoading(true);
+                try {
+                    const profileData = {
+                        name: name.trim(),
+                        email: email.trim(),
+                        configured: true,
+                        activationDate: new Date().toISOString(),
+                        capitalInicial: 0,
+                        efectivo: 0,
+                    };
+
+                    storageService.saveProfile(profileData);
+                    setProfileData(profileData);
+                    setIsConfigured(true);
+                    setCurrentView('dashboard');
+                    setMessage("¡Bienvenido a la aplicación!");
+                } catch (error) {
+                    setMessage("Error al guardar la configuración");
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleFinalizePurchase = async (productosPreview, compraFecha, compraCodigo) => {
+                if (productosPreview.length === 0) {
+                    setMessage("No hay productos en la vista previa");
+                    return;
+                }
+
+                setLoading(true);
+                let totalPurchaseCost = 0;
+
+                try {
+                    for (const newProduct of productosPreview) {
+                        const { nombre, cantidad, costo, precioVenta } = newProduct;
+                        const purchaseCost = cantidad * costo;
+                        totalPurchaseCost += purchaseCost;
+
+                        // Buscar producto existente
+                        const productos = storageService.getProductos();
+                        const existingIndex = productos.findIndex(p => p.nombre === nombre);
+
+                        if (existingIndex !== -1) {
+                            // Actualizar producto existente
+                            const existing = productos[existingIndex];
+                            storageService.updateProducto(existing.id, {
+                                cantidad: existing.cantidad + cantidad,
+                                costo,
+                                precioVenta,
+                                timestamp: compraFecha,
+                                codigoCompra: compraCodigo
+                            });
+                        } else {
+                            // Agregar nuevo producto
+                            storageService.addProducto({
+                                nombre, cantidad, costo, precioVenta,
+                                timestamp: compraFecha,
+                                codigoCompra: compraCodigo
+                            });
+                        }
+                    }
+
+                    // Actualizar efectivo
+                    const nuevoEfectivo = efectivo - totalPurchaseCost;
+                    const updatedProfile = { ...profileData, efectivo: nuevoEfectivo };
+                    storageService.saveProfile(updatedProfile);
+                    setEfectivo(nuevoEfectivo);
+
+                    setMessage('Compra registrada con éxito');
+                    loadAllData();
+                } catch (error) {
+                    setMessage('Error al registrar la compra');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleSellProduct = async (ventaData) => {
+                setLoading(true);
+                try {
+                    // Registrar venta
+                    storageService.addVenta(ventaData);
+                    
+                    if (ventaData.tipo === 'Efectivo') {
+                        // Actualizar efectivo
+                        const nuevoEfectivo = efectivo + ventaData.precioVentaTotal;
+                        const updatedProfile = { ...profileData, efectivo: nuevoEfectivo };
+                        storageService.saveProfile(updatedProfile);
+                        setEfectivo(nuevoEfectivo);
+                    } else {
+                        // Crear deuda
+                        storageService.addDeuda({
+                            deudor: ventaData.deudor,
+                            monto: ventaData.precioVentaTotal,
+                            esVenta: true,
+                            productosVendidos: ventaData.productosVendidos
+                        });
+                    }
+
+                    setMessage('Venta registrada con éxito');
+                    loadAllData();
+                } catch (error) {
+                    setMessage('Error al registrar la venta');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // Componente de navegación móvil
+            const MobileTabBar = () => {
+                const tabs = [
+                    { id: 'dashboard', label: 'Inicio', icon: Home },
+                    { id: 'inventario', label: 'Inventario', icon: Package },
+                    { id: 'ventas', label: 'Ventas', icon: ShoppingCart },
+                    { id: 'reportes', label: 'Reportes', icon: FileText },
+                    { id: 'menu', label: 'Más', icon: Menu },
+                ];
+
+                return (
+                    <div className="tab-bar safe-area">
+                        <div className="flex justify-around items-center py-2 px-4">
+                            {tabs.map(tab => {
+                                const IconComponent = tab.icon;
+                                const isActive = currentView === tab.id;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => {
+                                            if (tab.id === 'menu') {
+                                                setShowMobileMenu(true);
+                                            } else {
+                                                setCurrentView(tab.id);
+                                            }
+                                        }}
+                                        className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all touch-action ${
+                                            isActive ? 'text-pulperia-primary bg-green-50' : 'text-gray-500'
+                                        }`}
+                                    >
+                                        <IconComponent size={24} />
+                                        <span className="text-xs mt-1 font-medium">{tab.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            };
+
+            // Pantalla de configuración/login
+            const ConfiguracionScreen = () => {
+                const [formData, setFormData] = useState({
+                    name: profileData?.name || '',
+                    email: profileData?.email || '',
+                    code: ''
+                });
+
+                const handleSubmit = (e) => {
+                    e.preventDefault();
+                    handleLogin(formData.name, formData.email, formData.code);
+                };
+
+                return (
+                    <div className="min-h-screen bg-pulperia-background flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
+                            <div className="text-center mb-8">
+                                <div className="w-24 h-24 bg-pulperia-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Building size={40} color="white" />
+                                </div>
+                                <h1 className="text-2xl font-bold text-pulperia-text">Ministerio Heme Aquí</h1>
+                                <p className="text-pulperia-primary font-semibold">PULPERIA COMUNITARIA BENIGNO</p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Tu Nombre</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                        required
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary focus:border-transparent"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Tu Correo</label>
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                        required
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary focus:border-transparent"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Código de Activación</label>
+                                    <input
+                                        type="password"
+                                        value={formData.code}
+                                        onChange={(e) => setFormData({...formData, code: e.target.value})}
+                                        required
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary focus:border-transparent"
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full bg-pulperia-primary text-white p-3 rounded-lg font-semibold hover:bg-pulperia-secondary transition-colors touch-action"
+                                >
+                                    {loading ? 'Activando...' : 'Activar Aplicación'}
+                                </button>
+
+                                {message && (
+                                    <div className={`p-3 rounded-lg text-center ${
+                                        message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                                    }`}>
+                                        {message}
+                                    </div>
+                                )}
+                            </form>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Dashboard móvil
+            const DashboardScreen = () => {
+                const totalActivos = efectivo + productos.reduce((sum, p) => sum + (p.cantidad * p.costo), 0);
+                const totalPorCobrar = deudas.filter(d => d.esVenta).reduce((sum, d) => sum + d.monto, 0);
+                const totalVentas = ventas.reduce((sum, v) => sum + v.precioVentaTotal, 0);
+
+                const StatCard = ({ title, value, icon: IconComponent, color }) => (
+                    <div className={`bg-white p-4 rounded-xl shadow-md mobile-card border-l-4`} style={{borderLeftColor: color}}>
+                        <div className="flex items-center">
+                            <div className="p-2 rounded-lg" style={{backgroundColor: color + '20'}}>
+                                <IconComponent size={24} color={color} />
+                            </div>
+                            <div className="ml-3 flex-1">
+                                <p className="text-2xl font-bold text-gray-900">Bs {value.toFixed(2)}</p>
+                                <p className="text-sm text-gray-600">{title}</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+                return (
+                    <div className="min-h-screen bg-pulperia-background pb-20">
+                        {/* Header */}
+                        <div className="bg-pulperia-primary text-white p-4 rounded-b-3xl shadow-lg">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-xl font-bold">¡Hola, {profileData?.name}!</h1>
+                                    <p className="text-green-100">Pulpería Comunitaria</p>
+                                </div>
+                                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                    <Building size={24} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Stats Cards */}
+                        <div className="p-4 space-y-4">
+                            <StatCard title="Efectivo" value={efectivo} icon={DollarSign} color="#4CAF50" />
+                            <StatCard title="Activos Totales" value={totalActivos} icon={TrendingUp} color="#2196F3" />
+                            <StatCard title="Por Cobrar" value={totalPorCobrar} icon={CreditCard} color="#FF9800" />
+                            <StatCard title="Total Ventas" value={totalVentas} icon={ShoppingCart} color="#9C27B0" />
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="p-4">
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">Acciones Rápidas</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => setCurrentView('ventas')}
+                                    className="bg-white p-4 rounded-xl shadow-md mobile-card flex flex-col items-center"
+                                >
+                                    <ShoppingCart size={32} color="#6c9a75" />
+                                    <span className="mt-2 font-medium">Nueva Venta</span>
+                                </button>
+                                <button
+                                    onClick={() => setCurrentView('inventario')}
+                                    className="bg-white p-4 rounded-xl shadow-md mobile-card flex flex-col items-center"
+                                >
+                                    <Package size={32} color="#6c9a75" />
+                                    <span className="mt-2 font-medium">Inventario</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Pantalla de inventario simplificada
+            const InventarioScreen = () => {
+                const [showAddModal, setShowAddModal] = useState(false);
+                const [newProduct, setNewProduct] = useState({
+                    nombre: '', cantidad: '', costo: '', precioVenta: ''
+                });
+
+                const handleAddProduct = () => {
+                    if (!newProduct.nombre || !newProduct.cantidad || !newProduct.costo || !newProduct.precioVenta) {
+                        setMessage("Completa todos los campos");
+                        return;
+                    }
+
+                    const producto = {
+                        nombre: newProduct.nombre,
+                        cantidad: parseInt(newProduct.cantidad),
+                        costo: parseFloat(newProduct.costo),
+                        precioVenta: parseFloat(newProduct.precioVenta),
+                        timestamp: new Date().toISOString()
+                    };
+
+                    storageService.addProducto(producto);
+                    setProductos(storageService.getProductos());
+                    setNewProduct({ nombre: '', cantidad: '', costo: '', precioVenta: '' });
+                    setShowAddModal(false);
+                    setMessage("Producto agregado con éxito");
+                };
+
+                return (
+                    <div className="min-h-screen bg-pulperia-background pb-20">
+                        <div className="p-4">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Inventario</h2>
+                            
+                            {productos.length > 0 ? (
+                                <div className="space-y-3">
+                                    {productos.map(producto => (
+                                        <div key={producto.id} className="bg-white p-4 rounded-xl shadow-md mobile-card">
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <h3 className="font-semibold text-gray-900">{producto.nombre}</h3>
+                                                    <div className="flex space-x-4 mt-2">
+                                                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                                            Cant: {producto.cantidad}
+                                                        </span>
+                                                        <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
+                                                            Costo: Bs {producto.costo.toFixed(2)}
+                                                        </span>
+                                                        <span className="text-sm bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                                                            Venta: Bs {producto.precioVenta.toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <Package size={64} color="#ccc" className="mx-auto mb-4" />
+                                    <p className="text-gray-500">No hay productos en el inventario</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* FAB */}
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className="fab bg-pulperia-primary text-white p-4 rounded-full shadow-lg hover:bg-pulperia-secondary transition-colors touch-action"
+                        >
+                            <Plus size={24} />
+                        </button>
+
+                        {/* Modal */}
+                        {showAddModal && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                                <div className="bg-white rounded-xl p-6 w-full max-w-md animate-slide-up">
+                                    <h3 className="text-xl font-bold mb-4">Agregar Producto</h3>
+                                    
+                                    <div className="space-y-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Nombre del producto"
+                                            value={newProduct.nombre}
+                                            onChange={(e) => setNewProduct({...newProduct, nombre: e.target.value})}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="Cantidad"
+                                            value={newProduct.cantidad}
+                                            onChange={(e) => setNewProduct({...newProduct, cantidad: e.target.value})}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                        />
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder="Costo unitario (Bs)"
+                                            value={newProduct.costo}
+                                            onChange={(e) => setNewProduct({...newProduct, costo: e.target.value})}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                        />
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            placeholder="Precio de venta (Bs)"
+                                            value={newProduct.precioVenta}
+                                            onChange={(e) => setNewProduct({...newProduct, precioVenta: e.target.value})}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                        />
+                                    </div>
+
+                                    <div className="flex space-x-3 mt-6">
+                                        <button
+                                            onClick={() => setShowAddModal(false)}
+                                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors touch-action"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            onClick={handleAddProduct}
+                                            className="flex-1 px-4 py-2 bg-pulperia-primary text-white rounded-lg hover:bg-pulperia-secondary transition-colors touch-action"
+                                        >
+                                            Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            // Pantalla de ventas simplificada
+            const VentasScreen = () => {
+                const [showSaleModal, setShowSaleModal] = useState(false);
+                const [saleData, setSaleData] = useState({
+                    producto: '', cantidad: '1', tipo: 'efectivo', deudor: ''
+                });
+
+                const handleSale = () => {
+                    if (!saleData.producto || !saleData.cantidad) {
+                        setMessage("Selecciona producto y cantidad");
+                        return;
+                    }
+
+                    const producto = productos.find(p => p.nombre === saleData.producto);
+                    if (!producto) {
+                        setMessage("Producto no encontrado");
+                        return;
+                    }
+
+                    const cantidad = parseInt(saleData.cantidad);
+                    if (producto.cantidad < cantidad) {
+                        setMessage("Stock insuficiente");
+                        return;
+                    }
+
+                    const ventaData = {
+                        productosVendidos: [{
+                            nombre: producto.nombre,
+                            cantidad,
+                            precioVenta: producto.precioVenta,
+                            costo: producto.costo
+                        }],
+                        precioVentaTotal: producto.precioVenta * cantidad,
+                        tipo: saleData.tipo === 'efectivo' ? 'Efectivo' : 'Crédito',
+                        deudor: saleData.tipo === 'credito' ? saleData.deudor : null
+                    };
+
+                    // Actualizar stock
+                    storageService.updateProducto(producto.id, {
+                        cantidad: producto.cantidad - cantidad
+                    });
+
+                    handleSellProduct(ventaData);
+                    setSaleData({ producto: '', cantidad: '1', tipo: 'efectivo', deudor: '' });
+                    setShowSaleModal(false);
+                };
+
+                return (
+                    <div className="min-h-screen bg-pulperia-background pb-20">
+                        <div className="p-4">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Ventas</h2>
+                            
+                            {ventas.length > 0 ? (
+                                <div className="space-y-3">
+                                    {ventas.slice(-5).reverse().map(venta => (
+                                        <div key={venta.id} className="bg-white p-4 rounded-xl shadow-md">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="font-semibold">Bs {venta.precioVentaTotal.toFixed(2)}</p>
+                                                    <p className="text-sm text-gray-600">{venta.tipo}</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {new Date(venta.timestamp).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                                <span className={`px-2 py-1 rounded text-xs ${
+                                                    venta.tipo === 'Efectivo' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                                                }`}>
+                                                    {venta.tipo}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <ShoppingCart size={64} color="#ccc" className="mx-auto mb-4" />
+                                    <p className="text-gray-500">No hay ventas registradas</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* FAB */}
+                        <button
+                            onClick={() => setShowSaleModal(true)}
+                            className="fab bg-pulperia-primary text-white p-4 rounded-full shadow-lg hover:bg-pulperia-secondary transition-colors touch-action"
+                        >
+                            <Plus size={24} />
+                        </button>
+
+                        {/* Modal de venta */}
+                        {showSaleModal && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                                <div className="bg-white rounded-xl p-6 w-full max-w-md animate-slide-up">
+                                    <h3 className="text-xl font-bold mb-4">Nueva Venta</h3>
+                                    
+                                    <div className="space-y-4">
+                                        <select
+                                            value={saleData.producto}
+                                            onChange={(e) => setSaleData({...saleData, producto: e.target.value})}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                        >
+                                            <option value="">Seleccionar producto</option>
+                                            {productos.filter(p => p.cantidad > 0).map(p => (
+                                                <option key={p.id} value={p.nombre}>
+                                                    {p.nombre} (Stock: {p.cantidad})
+                                                </option>
+                                            ))}
+                                        </select>
+
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            placeholder="Cantidad"
+                                            value={saleData.cantidad}
+                                            onChange={(e) => setSaleData({...saleData, cantidad: e.target.value})}
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                        />
+
+                                        <div className="flex space-x-4">
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="tipo"
+                                                    value="efectivo"
+                                                    checked={saleData.tipo === 'efectivo'}
+                                                    onChange={(e) => setSaleData({...saleData, tipo: e.target.value})}
+                                                    className="mr-2"
+                                                />
+                                                Efectivo
+                                            </label>
+                                            <label className="flex items-center">
+                                                <input
+                                                    type="radio"
+                                                    name="tipo"
+                                                    value="credito"
+                                                    checked={saleData.tipo === 'credito'}
+                                                    onChange={(e) => setSaleData({...saleData, tipo: e.target.value})}
+                                                    className="mr-2"
+                                                />
+                                                Crédito
+                                            </label>
+                                        </div>
+
+                                        {saleData.tipo === 'credito' && (
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre del deudor"
+                                                value={saleData.deudor}
+                                                onChange={(e) => setSaleData({...saleData, deudor: e.target.value})}
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pulperia-primary"
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className="flex space-x-3 mt-6">
+                                        <button
+                                            onClick={() => setShowSaleModal(false)}
+                                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors touch-action"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            onClick={handleSale}
+                                            className="flex-1 px-4 py-2 bg-pulperia-primary text-white rounded-lg hover:bg-pulperia-secondary transition-colors touch-action"
+                                        >
+                                            Vender
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            // Pantalla de reportes simplificada
+            const ReportesScreen = () => {
+                const totalVentas = ventas.reduce((sum, v) => sum + v.precioVentaTotal, 0);
+                const totalDeudas = deudas.filter(d => d.esVenta).reduce((sum, d) => sum + d.monto, 0);
+
+                return (
+                    <div className="min-h-screen bg-pulperia-background pb-20">
+                        <div className="p-4">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Reportes</h2>
+                            
+                            <div className="bg-white rounded-xl shadow-md p-6 mb-4">
+                                <h3 className="text-lg font-bold mb-4">Resumen Financiero</h3>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span>Capital Inicial:</span>
+                                        <span className="font-semibold">Bs {capitalInicial.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Efectivo:</span>
+                                        <span className="font-semibold text-green-600">Bs {efectivo.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Total Ventas:</span>
+                                        <span className="font-semibold text-blue-600">Bs {totalVentas.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Por Cobrar:</span>
+                                        <span className="font-semibold text-orange-600">Bs {totalDeudas.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    const reportText = `REPORTE PULPERÍA COMUNITARIA\nFecha: ${new Date().toLocaleDateString()}\n\nCapital: Bs ${capitalInicial.toFixed(2)}\nEfectivo: Bs ${efectivo.toFixed(2)}\nVentas: Bs ${totalVentas.toFixed(2)}\nPor Cobrar: Bs ${totalDeudas.toFixed(2)}`;
+                                    navigator.share ? navigator.share({title: 'Reporte', text: reportText}) : alert('Reporte generado');
+                                }}
+                                className="w-full bg-pulperia-primary text-white p-3 rounded-lg font-semibold hover:bg-pulperia-secondary transition-colors touch-action"
+                            >
+                                <Download size={20} className="inline mr-2" />
+                                Exportar Reporte
+                            </button>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Menu móvil
+            const MobileMenu = () => {
+                const menuItems = [
+                    { id: 'materiales', label: 'Materiales', icon: Building },
+                    { id: 'deudas', label: 'Deudas', icon: CreditCard },
+                    { id: 'capital', label: 'Capital', icon: DollarSign },
+                    { id: 'ganancias', label: 'Ganancias', icon: TrendingUp },
+                    { id: 'gastos', label: 'Gastos', icon: CreditCard },
+                    { id: 'suscripciones', label: 'Suscripciones', icon: Users },
+                    { id: 'ajustes', label: 'Ajustes', icon: Settings },
+                ];
+
+                return (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
+                        <div className="bg-white rounded-t-3xl w-full max-w-md animate-slide-up">
+                            <div className="p-6">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h3 className="text-xl font-bold">Más Opciones</h3>
+                                    <button
+                                        onClick={() => setShowMobileMenu(false)}
+                                        className="p-2 rounded-full hover:bg-gray-100 touch-action"
+                                    >
+                                        <X size={24} />
+                                    </button>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4">
+                                    {menuItems.map(item => {
+                                        const IconComponent = item.icon;
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => {
+                                                    setCurrentView(item.id);
+                                                    setShowMobileMenu(false);
+                                                }}
+                                                className="flex flex-col items-center p-4 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors touch-action"
+                                            >
+                                                <IconComponent size={32} color="#6c9a75" />
+                                                <span className="mt-2 text-sm font-medium">{item.label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Renderizar vista actual
+            const renderCurrentView = () => {
+                if (!isConfigured) {
+                    return <ConfiguracionScreen />;
+                }
+
+                switch (currentView) {
+                    case 'dashboard':
+                        return <DashboardScreen />;
+                    case 'inventario':
+                        return <InventarioScreen />;
+                    case 'ventas':
+                        return <VentasScreen />;
+                    case 'reportes':
+                        return <ReportesScreen />;
+                    default:
+                        return <DashboardScreen />;
+                }
+            };
+
+            return (
+                <div className="relative">
+                    {renderCurrentView()}
+                    
+                    {isConfigured && <MobileTabBar />}
+                    {showMobileMenu && <MobileMenu />}
+                    
+                    {/* Mensaje global */}
+                    {message && (
+                        <div className="fixed top-4 left-4 right-4 z-50">
+                            <div className={`p-3 rounded-lg shadow-lg ${
+                                message.includes('Error') ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+                            }`}>
+                                {message}
+                                <button
+                                    onClick={() => setMessage('')}
+                                    className="float-right ml-2"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<PulperiaApp />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "pulperia-nativa",
+  "version": "1.0.0",
+  "description": "App nativa Pulpería Comunitaria",
+  "main": "index.html",
+  "scripts": {
+    "build": "capacitor build android",
+    "sync": "capacitor sync",
+    "add-android": "capacitor add android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/android": "^5.0.0"
+  }
+}
