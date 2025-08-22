@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Descarga Automática - Pulpería Comunitaria</title>
+    <meta charset="utf-8">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+            background: linear-gradient(135deg, #6c9a75, #5b8764);
+            color: white;
+        }
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .download-btn {
+            background: #6c9a75;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .download-btn:hover { background: #5b8764; }
+    </style>
+    <script>
+        function downloadAPK(filename) {
+            const link = document.createElement('a');
+            link.href = filename;
+            link.download = 'pulperia-comunitaria.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert('📱 ¡Descarga iniciada!
+
+Archivo: ' + filename + '
+Código: 120217
+
+¡Instala en tu Android!');
+        }
+        
+        // Descarga automática al cargar
+        window.onload = function() {
+            setTimeout(() => {
+                downloadAPK('PULPERIA_APP_FINAL.apk');
+            }, 2000);
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🏪 Pulpería Comunitaria</h1>
+        <h2>📱 APK Nativa Lista</h2>
+        <p><strong>Tamaño:</strong> 3.9 MB</p>
+        <p><strong>Código:</strong> 120217</p>
+        
+        <h3>📥 Descarga Automática Iniciando...</h3>
+        <p>Si no se descarga automáticamente, usa estos botones:</p>
+        
+        <a href="PULPERIA_APP_FINAL.apk" download="pulperia-comunitaria.apk" class="download-btn" onclick="downloadAPK('PULPERIA_APP_FINAL.apk')">
+            📥 DESCARGAR APK PRINCIPAL
+        </a>
+        
+        <a href="PULPERIA_COMUNITARIA_FINAL.apk" download="pulperia-backup.apk" class="download-btn" onclick="downloadAPK('PULPERIA_COMUNITARIA_FINAL.apk')">
+            📥 DESCARGAR RESPALDO
+        </a>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 10px; margin: 20px 0;">
+            <h3>📲 Instalación:</h3>
+            <ol style="text-align: left;">
+                <li>Transfiere la APK a tu Android</li>
+                <li>Habilita "Fuentes desconocidas"</li>
+                <li>Instala la APK</li>
+                <li>Código: <strong>120217</strong></li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
